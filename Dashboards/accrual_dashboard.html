@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-Driven Accrual Matching | SAP BDC</title>
+<style>
+:root{--bl:#00338D;--bld:#0C233C;--bll:#ACEAFF;--gn:#098E7E;--or:#FD349C;--rd:#AB0D82;--go:#FD349C;--pu:#7213EA;--bg:#F5F6F7;--wh:#fff;--br:#D9DADB;--tx:#1D2D3E;--mt:#556B82;--sh:#0C233C}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+.shell{background:var(--sh);color:#fff;padding:0 18px;height:44px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.shl{display:flex;align-items:center;gap:10px}.brand{font-size:18px;font-weight:700}.sep{color:rgba(255,255,255,.35);font-size:20px}.apn{font-size:13px;color:rgba(255,255,255,.8)}
+.shr{display:flex;align-items:center;gap:14px;font-size:12px;color:rgba(255,255,255,.7)}
+.sbg{background:var(--bl);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.spike{background:#FEE8F5;border-left:4px solid var(--or);padding:9px 18px;font-size:13px;color:#6D0055;display:flex;align-items:center;gap:8px}
+.spike strong{color:var(--or)}
+.fb{background:#fff;border-bottom:1px solid var(--br);padding:8px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.fb label{font-size:11px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.fb select{border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px;background:#fff;cursor:pointer}
+.fb select:focus{outline:none;border-color:var(--bl)}
+.fdv{width:1px;height:22px;background:var(--br)}
+.btnr{margin-left:auto;background:var(--bl);color:#fff;border:none;padding:6px 14px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:700}
+.btnr:hover{background:var(--bld)}
+.tabs{background:#fff;border-bottom:2px solid var(--br);padding:0 18px;display:flex}
+.tab{padding:11px 16px;border:none;background:none;font-size:14px;color:var(--mt);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--bl)}.tab.on{color:var(--bl);border-bottom-color:var(--bl);font-weight:700}
+.pg{display:none;padding:16px 18px}.pg.on{display:block}
+.pt{font-size:17px;font-weight:700;margin-bottom:3px}.ps{font-size:12px;color:var(--mt);margin-bottom:14px}
+.kr{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:14px}
+.kc{background:#fff;border:1px solid var(--br);border-radius:8px;padding:15px 16px;position:relative;overflow:hidden;transition:box-shadow .2s}
+.kc:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:8px 8px 0 0}
+.kc.bl::before{background:var(--bl)}.kc.gn::before{background:var(--gn)}.kc.or::before{background:var(--or)}.kc.rd::before{background:var(--rd)}.kc.pu::before{background:var(--pu)}
+.kl{font-size:11px;color:var(--mt);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:6px}
+.kv{font-size:26px;font-weight:700;line-height:1}.ks{font-size:12px;color:var(--mt);margin-top:4px}
+.kt{font-size:12px;font-weight:700;margin-top:3px}.kt.up{color:var(--rd)}.kt.dn{color:var(--gn)}
+.cr{display:grid;gap:13px;margin-bottom:14px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c12{grid-template-columns:1fr 2fr}.c21{grid-template-columns:2fr 1fr}
+.cc{background:#fff;border:1px solid var(--br);border-radius:8px;padding:15px 16px;transition:box-shadow .2s}
+.cc:hover{box-shadow:0 4px 14px rgba(0,0,0,.07)}
+.ctt{font-size:13px;font-weight:700;margin-bottom:2px}.cst{font-size:11px;color:var(--mt);margin-bottom:9px}
+.cb{width:100%}
+.tc{background:#fff;border:1px solid var(--br);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.th{padding:11px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.tt2{font-size:13px;font-weight:700}
+.ts{border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px;width:190px}
+.ts:focus{outline:none;border-color:var(--bl)}
+table{width:100%;border-collapse:collapse}
+th{background:#F8F9FA;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);border-bottom:1px solid var(--br);cursor:pointer;white-space:nowrap}
+th:hover{color:var(--bl);background:#EEF0F2}
+td{padding:9px 12px;border-bottom:1px solid #F0F1F2;font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--bll)}
+.badge{display:inline-block;padding:3px 9px;border-radius:11px;font-size:11px;font-weight:700;white-space:nowrap}
+.bH{background:#E0F5F3;color:#098E7E}.bM{background:#FEE8F5;color:#AB0D82}.bL{background:#F5E0F0;color:#AB0D82}
+.bPOST{background:#EBF0FC;color:#00338D}.bREVIEW{background:#FEE8F5;color:#AB0D82}.bMONITOR{background:#F0E6FD;color:#7213EA}.bNO{background:#ECEFF1;color:#455A64}
+.cbarw{display:flex;align-items:center;gap:7px}
+.cbar{height:7px;border-radius:4px;background:#E0E0E0;flex:1;min-width:55px;overflow:hidden}
+.cbarf{height:100%;border-radius:4px}
+.cbarv{font-size:12px;font-weight:700;min-width:30px;text-align:right}
+.dc{display:inline-block;padding:2px 7px;border-radius:9px;font-size:11px;font-weight:700}
+.dH{background:#F5E0F0;color:var(--rd)}.dM{background:#FEE8F5;color:var(--go)}.dL{background:#E0F5F3;color:var(--gn)}
+.btna{color:#fff;border:none;padding:4px 11px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
+.dr{display:none;background:var(--bll);border:1px solid #76D2FF;border-radius:8px;padding:13px 16px;margin-top:9px}
+.dr.on{display:block}
+.drt{font-size:13px;font-weight:700;color:var(--bld);margin-bottom:7px}
+.drc{float:right;cursor:pointer;color:var(--mt);font-size:16px}
+.drg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dil{font-size:11px;color:var(--mt);text-transform:uppercase;margin-bottom:2px}
+.div2{font-size:16px;font-weight:700}
+.pft{text-align:center;padding:16px;font-size:11px;color:var(--mt)}
+@media(max-width:900px){.kr,.c2,.c12,.c21{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.kr,.c3{grid-template-columns:1fr}.shr{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="shl"><span class="brand">SAP</span><span class="sep">|</span><span class="apn">AI-Driven Accrual Matching &nbsp;·&nbsp; SAP Business Data Cloud</span></div>
+  <div class="shr"><span>ML Engine: <b style="color:#00C0AE">&#9679; Active</b></span><span class="sbg">Full Scope</span><span>Company: <b style="color:#fff">IACM Corp</b></span><span>May 2026</span></div>
+</div>
+<div class="spike"><span>&#9888;</span><span><strong>Seasonal Spike Detected:</strong> May 2026 exposure is <strong>+23.9%</strong> above April baseline. Q1/Q2 boundary pattern confirmed. 18 new high-confidence items in last 24h.</span></div>
+<div class="fb">
+  <label>Filters</label><div class="fdv"></div>
+  <label>Company Code</label>
+  <select id="fC"><option value="all">All Companies</option><option value="1000">1000 – IACM Corp US</option><option value="2000">2000 – IACM Corp EU</option><option value="3000">3000 – IACM Corp LATAM</option></select>
+  <label>Fiscal Period</label>
+  <select id="fP"><option value="cur">May 2026 (Current)</option><option value="q1">Q1 2026</option><option value="q4">Q4 2025</option><option value="ytd">YTD 2026</option><option value="12m">Rolling 12M</option></select>
+  <label>Min. Confidence</label>
+  <select id="fK" onchange="applyF()"><option value="0">All Items</option><option value="60">&ge;60% Medium+</option><option value="80" selected>&ge;80% High Only</option><option value="90">&ge;90% Very High</option></select>
+  <button class="btnr" onclick="doRefresh()">&#8635; Refresh Data</button>
+</div>
+<div class="tabs">
+  <button class="tab on"  onclick="showP('p1',this)">&#128202; Executive Summary</button>
+  <button class="tab"     onclick="showP('p2',this)">&#128200; Trends &amp; Spikes</button>
+  <button class="tab"     onclick="showP('p3',this)">&#127981; Vendor &amp; GL Intel</button>
+  <button class="tab"     onclick="showP('p4',this)">&#128203; Accrual Worklist</button>
+</div>
+
+<!-- PAGE 1 -->
+<div id="p1" class="pg on">
+  <div class="pt">Executive Summary</div>
+  <div class="ps">Real-time accrual exposure &#183; AI confidence scoring via Databricks ML &#183; SAP Datasphere Foundation Service</div>
+  <div class="kr">
+    <div class="kc bl"><div class="kl">Total Accrual Exposure</div><div class="kv">$3.84M</div><div class="ks">89 open items &#183; May 2026</div><div class="kt up">&#9650; +23.9% vs. prior period</div></div>
+    <div class="kc gn"><div class="kl">High Confidence &ge;80%</div><div class="kv">47 items</div><div class="ks">$2.65M &#183; 69% of exposure</div><div class="kt up">&#9650; +18 items since last run</div></div>
+    <div class="kc or"><div class="kl">Avg ML Confidence Score</div><div class="kv">76%</div><div class="ks">Model trained May 19 2026</div><div class="kt up">&#9650; +4pts vs. prior month</div></div>
+    <div class="kc rd"><div class="kl">Items at Risk (Open &gt;30d)</div><div class="kv">63 items</div><div class="ks">$2.21M at risk</div><div class="kt up">&#9650; +8 items this week</div></div>
+  </div>
+  <div class="cr c12">
+    <div class="cc"><div class="ctt">Confidence Level Distribution</div><div class="cst">By item count &#183; click segment to drill down</div><div class="cb" id="ch-donut" style="height:220px"></div>
+      <div id="dr-donut" class="dr"><span class="drc" onclick="cdr('dr-donut')">&#10005;</span><div class="drt" id="ddt"></div><div class="drg" id="ddc"></div></div></div>
+    <div class="cc"><div class="ctt">Top 5 Vendors by Accrual Exposure</div><div class="cst">Current period &#183; click bar for detail</div><div class="cb" id="ch-vend" style="height:220px"></div>
+      <div id="dr-vend" class="dr"><span class="drc" onclick="cdr('dr-vend')">&#10005;</span><div class="drt" id="dvt"></div><div class="drg" id="dvc"></div></div></div>
+  </div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Exposure by G/L Account</div><div class="cst">Top accounts driving accrual risk</div><div class="cb" id="ch-gl" style="height:200px"></div></div>
+    <div class="cc"><div class="ctt">Feb–May 2026 &#183; GR/IR vs Manual vs ACE</div><div class="cst">Monthly accrual type breakdown &#183; Stacked ($K)</div><div class="cb" id="ch-snap" style="height:200px"></div></div>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div id="p2" class="pg">
+  <div class="pt">Monthly Trends &amp; Seasonal Spike Indicators</div>
+  <div class="ps">12-month rolling &#183; MoM variance &#183; Spike threshold &#177;15%</div>
+  <div class="cr"><div class="cc"><div class="ctt">Total Accrual Exposure — 12-Month Rolling Trend</div><div class="cst">Jun 2025–May 2026 &#183; Exposure ($K) and Item Count</div><div class="cb" id="ch-trend" style="height:255px"></div></div></div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Month-over-Month Variance (%)</div><div class="cst">Red = spike &gt;+15% &#183; Green = favorable decline</div><div class="cb" id="ch-var" style="height:225px"></div></div>
+    <div class="cc"><div class="ctt">Accrual by Type — 12 Months Stacked</div><div class="cst">GR/IR vs Manual vs ACE Engine ($K)</div><div class="cb" id="ch-stk" style="height:225px"></div></div>
+  </div>
+  <div class="cr c3">
+    <div class="cc"><div class="ctt">Seasonal Avg by Fiscal Period</div><div class="cst">Historical average exposure</div><div class="cb" id="ch-sea" style="height:190px"></div></div>
+    <div class="cc"><div class="ctt">High Confidence Items — Count</div><div class="cst">Items &ge;80% confidence over time</div><div class="cb" id="ch-hc" style="height:190px"></div></div>
+    <div class="cc"><div class="ctt">Avg Days Open — Trend</div><div class="cst">Average age of open accrual items</div><div class="cb" id="ch-do" style="height:190px"></div></div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div id="p3" class="pg">
+  <div class="pt">Vendor &amp; GL Intelligence</div>
+  <div class="ps">Delay profiles &#183; GL exposure &#183; ML risk scoring &#183; Click any vendor row to drill down</div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Vendor Exposure vs Invoice Delay</div><div class="cst">Bubble size = open items &#183; Red zone = high risk quadrant</div><div class="cb" id="ch-bub" style="height:245px"></div></div>
+    <div class="cc"><div class="ctt">Top G/L Accounts by Exposure</div><div class="cst">Current period</div><div class="cb" id="ch-glh" style="height:245px"></div></div>
+  </div>
+  <div class="tc">
+    <div class="th"><div class="tt2">Vendor Delay Profile &amp; Risk Scoring</div><input class="ts" type="text" placeholder="Search vendor..." oninput="filterVT(this.value)"></div>
+    <table><thead><tr><th onclick="sortVT(0)">ID</th><th onclick="sortVT(1)">Vendor Name</th><th onclick="sortVT(2)">Exposure</th><th onclick="sortVT(3)">Avg Delay</th><th onclick="sortVT(4)">Late Rate</th><th onclick="sortVT(5)">ML Confidence</th><th>Risk</th><th onclick="sortVT(7)">Items</th></tr></thead>
+    <tbody id="vtb"></tbody></table>
+  </div>
+  <div id="dr-vt" class="dr"><span class="drc" onclick="cdr('dr-vt')">&#10005;</span><div class="drt" id="dvtt"></div><div class="drg" id="dvtc"></div></div>
+</div>
+
+<!-- PAGE 4 -->
+<div id="p4" class="pg">
+
+  <!-- Queue status tabs + Total Exposure card -->
+  <div style="display:flex;gap:13px;margin-bottom:12px;align-items:stretch">
+    <div style="display:flex;flex:1;background:#fff;border:1px solid var(--br);border-radius:8px;overflow:hidden">
+      <button class="wltab" id="wltab-all" onclick="wlTabClick('all',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid #0070F2;padding:14px 16px;cursor:pointer;background:#F0F6FF;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#0070F2;margin-bottom:6px">AUTO-POST ELIGIBLE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">4 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-rev" onclick="wlTabClick('REVIEW',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#E76500;margin-bottom:6px">EXCEPTION REVIEW QUEUE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">4 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-mon" onclick="wlTabClick('MONITOR',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B3FA0;margin-bottom:6px">WATCHLIST / OBSERVATION QUEUE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">3 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-no" onclick="wlTabClick('NO ACTION',this)" style="flex:1;border:none;border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:6px">NO ACTION</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">1 <span style="font-size:13px;font-weight:500;color:var(--mt)">item</span></div>
+      </button>
+    </div>
+    <div style="min-width:200px;background:#fff;border:1px solid var(--br);border-radius:8px;padding:16px 18px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:8px">TOTAL ACCRUAL EXPOSURE</div>
+      <div style="font-size:32px;font-weight:700;color:var(--tx);line-height:1">$3.84M</div>
+      <div style="font-size:12px;color:var(--mt);margin-top:6px">89 open items &middot; May 2026</div>
+      <div style="font-size:12px;font-weight:700;color:var(--rd);margin-top:4px">&#9650; +23.9% vs. prior period</div>
+    </div>
+  </div>
+
+  <!-- Spike alert -->
+  <div style="background:#FEE8F5;border-left:4px solid var(--or);border-radius:0 4px 4px 0;padding:9px 14px;font-size:12px;color:#6D0055;display:flex;align-items:flex-start;gap:8px;margin-bottom:13px">
+    <span style="font-size:15px;margin-top:1px">&#9888;</span>
+    <span><strong style="color:var(--or)">Seasonal Spike Detected:</strong> May 2026 exposure is <strong>+23.9%</strong> above April baseline. Q1/Q2 boundary pattern confirmed. <strong>18 new high-confidence items</strong> in last 24h.</span>
+  </div>
+
+  <div class="pt">Accrual Operations Worklist — Collection Worklist</div>
+  <div class="ps">AI-recommended postings &#183; Databricks output &#183; Approve to trigger BAPI in S/4HANA</div>
+
+  <div class="tc">
+    <div class="th">
+      <div class="tt2">Recommended Accrual Items — May 2026 Period Close</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="wl-act-filter" onchange="filterWL(this.value)" style="border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px">
+          <option value="all">All Actions</option><option value="POST">POST</option><option value="REVIEW">REVIEW</option><option value="MONITOR">MONITOR</option><option value="NO ACTION">NO ACTION</option>
+        </select>
+        <input class="ts" type="text" placeholder="Search PO / Vendor..." oninput="filterWLT(this.value)">
+      </div>
+    </div>
+    <table><thead><tr><th>PO Number</th><th>Vendor</th><th>G/L Account</th><th>Exposure</th><th>Days Open</th><th>Action</th></tr></thead>
+    <tbody id="wlb"></tbody></table>
+  </div>
+</div>
+
+<div class="pft">AI-Driven Accrual Matching &#183; SAP Business Data Cloud &#183; Conceptual Prototype v3.0 &#183; May 2026 &#183; Zero external dependencies</div>
+
+<script>
+// =====================================================
+// DATA
+// =====================================================
+var VD=[
+  {id:'V001',nm:'Accenture LLC',      ex:850000,dy:45,lr:72,cf:88,it:12},
+  {id:'V002',nm:'Deloitte Services',  ex:620000,dy:32,lr:58,cf:79,it:8},
+  {id:'V003',nm:'IBM Corp',           ex:480000,dy:28,lr:45,cf:71,it:6},
+  {id:'V004',nm:'Microsoft Licensing',ex:320000,dy:12,lr:22,cf:45,it:4},
+  {id:'V005',nm:'AWS Services',       ex:280000,dy:8, lr:15,cf:38,it:3},
+  {id:'V006',nm:'SAP SE',             ex:240000,dy:35,lr:62,cf:82,it:5},
+  {id:'V007',nm:'Oracle Corp',        ex:195000,dy:22,lr:38,cf:65,it:4},
+  {id:'V008',nm:'Cognizant',          ex:175000,dy:41,lr:68,cf:84,it:7},
+  {id:'V009',nm:'Wipro Limited',      ex:145000,dy:18,lr:30,cf:55,it:3},
+  {id:'V010',nm:'Salesforce Inc.',    ex:120000,dy:10,lr:18,cf:42,it:2}
+];
+var GL=[
+  {ac:'601000',nm:'Professional Svcs',ex:1580000,it:28,cf:82},
+  {ac:'620000',nm:'IT & Technology',  ex:920000, it:19,cf:74},
+  {ac:'630000',nm:'Maintenance',      ex:480000, it:15,cf:67},
+  {ac:'640000',nm:'Marketing',        ex:380000, it:12,cf:71},
+  {ac:'650000',nm:'Travel',           ex:280000, it:9, cf:58},
+  {ac:'660000',nm:'Utilities',        ex:200000, it:6, cf:63}
+];
+var MO=['Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26','May-26'];
+var TA=[1850,1920,1780,2100,2350,2680,3200,2900,2450,2650,3100,3840];
+var TC=[52,55,48,61,68,74,89,81,67,72,85,89];
+var MM=[-7,3.8,-7.3,18,11.9,14,19.4,-9.4,-15.5,8.2,17,23.9];
+var GR=[820,890,750,960,1100,1280,1580,1350,1120,1200,1450,1820];
+var MA=[680,710,690,800,870,980,1150,1050,900,980,1150,1380];
+var AC=[350,320,340,340,380,420,470,500,430,470,500,640];
+var SA=[2850,2300,2600,3000,3700,1950,1850,1780,2050,2400,2700,3150];
+var SM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var HC=[28,31,26,35,39,44,52,47,38,41,50,47];
+var DO=[31,29,33,36,38,41,44,42,35,37,40,38];
+var WL=[
+  {po:'4500012345',vn:'Accenture LLC',      gl:'601000 Prof. Svcs',  am:185000,dy:52,cf:94,ac:'POST'},
+  {po:'4500012346',vn:'Cognizant',           gl:'601000 Prof. Svcs',  am:142000,dy:61,cf:91,ac:'POST'},
+  {po:'4500012347',vn:'SAP SE',              gl:'620000 IT & Tech',   am:98000, dy:44,cf:87,ac:'POST'},
+  {po:'4500012348',vn:'Deloitte Services',   gl:'601000 Prof. Svcs',  am:215000,dy:38,cf:83,ac:'POST'},
+  {po:'4500012349',vn:'IBM Corp',            gl:'620000 IT & Tech',   am:76000, dy:29,cf:78,ac:'REVIEW'},
+  {po:'4500012350',vn:'Deloitte Services',   gl:'630000 Maintenance', am:54000, dy:33,cf:75,ac:'REVIEW'},
+  {po:'4500012351',vn:'Oracle Corp',         gl:'620000 IT & Tech',   am:89000, dy:25,cf:71,ac:'REVIEW'},
+  {po:'4500012352',vn:'Wipro Limited',       gl:'601000 Prof. Svcs',  am:63000, dy:21,cf:68,ac:'REVIEW'},
+  {po:'4500012353',vn:'Microsoft Licensing', gl:'620000 IT & Tech',   am:145000,dy:14,cf:52,ac:'MONITOR'},
+  {po:'4500012354',vn:'AWS Services',        gl:'620000 IT & Tech',   am:112000,dy:12,cf:45,ac:'MONITOR'},
+  {po:'4500012355',vn:'Salesforce Inc.',     gl:'640000 Marketing',   am:67000, dy:10,cf:42,ac:'MONITOR'},
+  {po:'4500012356',vn:'Amazon Web Services', gl:'650000 Travel',      am:23000, dy:8, cf:35,ac:'NO ACTION'}
+];
+var fVD=[].concat(VD), fWL=[].concat(WL);
+
+// =====================================================
+// HELPERS
+// =====================================================
+function fmtK(v){return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1000?Math.round(v/1000)+'K':v);}
+function fmtF(v){return '$'+v.toLocaleString();}
+function cc(v){return v>=80?'#098E7E':v>=60?'#FD349C':'#AB0D82';}
+function cb(v){return v>=80?'bH':v>=60?'bM':'bL';}
+function cl(v){return v>=80?'High':v>=60?'Medium':'Low';}
+function dc(d){return d>30?'dH':d>15?'dM':'dL';}
+function ab(a){return {POST:'bPOST',REVIEW:'bREVIEW',MONITOR:'bMONITOR','NO ACTION':'bNO'}[a]||'';}
+
+// =====================================================
+// SVG ENGINE (pure — no libraries)
+// =====================================================
+var NS='http://www.w3.org/2000/svg';
+function se(tag,a){
+  var e=document.createElementNS(NS,tag);
+  if(a){for(var k in a){e.setAttribute(k,a[k]);}}
+  return e;
+}
+function tip(e,t){var x=document.createElementNS(NS,'title');x.textContent=t;e.insertBefore(x,e.firstChild);return e;}
+function mkSVG(id,w,h){
+  var c=document.getElementById(id);
+  c.innerHTML='';
+  var s=se('svg',{viewBox:'0 0 '+w+' '+h,width:'100%',height:'100%'});
+  c.appendChild(s);
+  return s;
+}
+function addTxt(s,x,y,text,a){
+  var t=se('text',a);
+  t.setAttribute('x',x);t.setAttribute('y',y);
+  t.textContent=text;
+  s.appendChild(t);
+  return t;
+}
+function hgrid(s,x0,y0,x1,y1,n){
+  for(var i=0;i<=n;i++){
+    var y=y0+(y1-y0)*i/n;
+    s.appendChild(se('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'#E5E5E5','stroke-width':1}));
+  }
+}
+function yax(s,x0,y0,y1,mn,mx,n,fmt){
+  for(var i=0;i<=n;i++){
+    var v=mn+(mx-mn)*(n-i)/n;
+    var y=y0+(y1-y0)*i/n;
+    addTxt(s,x0-5,y+4,fmt(v),{'text-anchor':'end','font-size':'9.5',fill:'#666666'});
+  }
+}
+
+// ── VERTICAL BAR CHART ──────────────────────────────
+function barV(id,labels,series,cfg){
+  cfg=cfg||{};
+  var W=500,H=cfg.h||255,x0=55,y0=18,x1=490,y1=H-28;
+  var cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var mx=0;
+  var i,j;
+  if(cfg.stacked){
+    for(i=0;i<labels.length;i++){var sm=0;for(j=0;j<series.length;j++)sm+=(series[j].data[i]||0);if(sm>mx)mx=sm;}
+  } else {
+    for(i=0;i<series.length;i++){for(j=0;j<series[i].data.length;j++){if(series[i].data[j]>mx)mx=series[i].data[j];}}
+  }
+  mx=Math.ceil(mx*1.18);
+  var fY=cfg.fY||function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);};
+  var COLS=cfg.colors||['#00338D','#1E49E2','#76D2FF','#AB0D82','#7213EA'];
+  hgrid(s,x0,y0,x1,y1,5);
+  yax(s,x0,y0,y1,0,mx,5,fY);
+  var n=labels.length,slot=cW/n;
+  for(i=0;i<n;i++){
+    var yBase=y1;
+    for(j=0;j<series.length;j++){
+      var val=series[j].data[i]||0;
+      var bH=(val/mx)*cH;
+      var bx,by,bw,col;
+      if(cfg.stacked){
+        bx=x0+i*slot+slot*0.15;bw=slot*0.7;by=yBase-bH;col=series[j].color||COLS[j];yBase-=bH;
+      } else if(series.length>1){
+        bw=slot*0.72/series.length;bx=x0+i*slot+slot*0.14+j*bw;by=y1-bH;col=series[j].color||COLS[j];
+      } else {
+        bx=x0+i*slot+slot*0.15;bw=slot*0.7;by=y1-bH;col=(cfg.bc&&cfg.bc[i])||series[j].color||COLS[0];
+      }
+      var r=se('rect',{x:bx,y:Math.max(by,y0),width:bw,height:Math.min(bH,cH),fill:col,rx:2});
+      tip(r,labels[i]+': '+fY(val));
+      r.style.cursor='pointer';
+      s.appendChild(r);
+    }
+    var lbl=labels[i];if(lbl.length>9)lbl=lbl.slice(0,8)+'…';
+    addTxt(s,x0+i*slot+slot/2,y1+14,lbl,{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+  }
+  if(cfg.legend&&series.length>1){
+    for(i=0;i<series.length;i++){
+      var col2=series[i].color||COLS[i],lx=x0+i*140;
+      s.appendChild(se('rect',{x:lx,y:H-14,width:10,height:10,fill:col2,rx:2}));
+      addTxt(s,lx+13,H-4,cfg.legend[i]||series[i].label||'',{'font-size':'10',fill:'#666666'});
+    }
+  }
+}
+
+// ── HORIZONTAL BAR ──────────────────────────────────
+function barH(id,labels,vals,colors,cfg){
+  cfg=cfg||{};
+  var W=500,H=Math.max(200,labels.length*36+50);
+  var x0=cfg.x0||152,y0=12,x1=462,y1=H-22,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var mx=0;for(var i=0;i<vals.length;i++){if(vals[i]>mx)mx=vals[i];}mx*=1.18;
+  var fX=cfg.fX||function(v){return '$'+Math.round(v/1000)+'K';};
+  for(i=0;i<=4;i++){
+    var x=x0+cW*i/4;
+    s.appendChild(se('line',{x1:x,y1:y0,x2:x,y2:y1,stroke:'#E5E5E5','stroke-width':1}));
+    addTxt(s,x,y1+12,fX(mx*i/4),{'text-anchor':'middle','font-size':'9',fill:'#666666'});
+  }
+  var slot=cH/labels.length;
+  for(i=0;i<labels.length;i++){
+    var bH=slot*0.58,y=y0+i*slot+(slot-bH)/2,bW=(vals[i]/mx)*cW;
+    var lbl=labels[i];if(lbl.length>19)lbl=lbl.slice(0,18)+'…';
+    addTxt(s,x0-7,y+bH/2+4,lbl,{'text-anchor':'end','font-size':'10.5',fill:'#1D2D3E'});
+    var col=Array.isArray(colors)?colors[i]:colors;
+    var r=se('rect',{x:x0,y:y,width:bW,height:bH,fill:col,rx:3});
+    tip(r,labels[i]+': '+fX(vals[i]));r.style.cursor='pointer';s.appendChild(r);
+    addTxt(s,x0+bW+5,y+bH/2+4,fX(vals[i]),{'font-size':'10',fill:col,'font-weight':'bold'});
+  }
+}
+
+// ── LINE CHART ──────────────────────────────────────
+function lineC(id,labels,series,cfg){
+  cfg=cfg||{};
+  var W=500,H=cfg.h||255,x0=58,y0=18,x1=492,y1=H-28,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var all=[],i,j;
+  for(i=0;i<series.length;i++){for(j=0;j<series[i].data.length;j++)all.push(series[i].data[j]);}
+  var mn=cfg.mn!==undefined?cfg.mn:Math.min.apply(null,all)*0.88;
+  var mx=cfg.mx!==undefined?cfg.mx:Math.max.apply(null,all)*1.12;
+  mn=Math.floor(mn);mx=Math.ceil(mx);
+  var fY=cfg.fY||function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);};
+  var n=labels.length;
+  hgrid(s,x0,y0,x1,y1,5);
+  yax(s,x0,y0,y1,mn,mx,5,fY);
+  for(i=0;i<n;i++){
+    addTxt(s,x0+i*cW/(n-1),y1+13,labels[i],{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+  }
+  var COLS=['#00338D','#00B8F5','#098E7E'];
+  for(i=0;i<series.length;i++){
+    var d=series[i],col=d.color||COLS[i]||'#666';
+    var pts=[];
+    for(j=0;j<d.data.length;j++){
+      pts.push([x0+j*cW/(n-1), y1-(d.data[j]-mn)/(mx-mn)*cH]);
+    }
+    if(d.fill){
+      var ap='M '+pts[0][0]+','+y1;
+      for(j=0;j<pts.length;j++)ap+=' L '+pts[j][0]+','+pts[j][1];
+      ap+=' L '+pts[pts.length-1][0]+','+y1+' Z';
+      s.appendChild(se('path',{d:ap,fill:col,opacity:'0.1',stroke:'none'}));
+    }
+    var lp='M '+pts[0][0]+','+pts[0][1];
+    for(j=1;j<pts.length;j++)lp+=' L '+pts[j][0]+','+pts[j][1];
+    var la={d:lp,stroke:col,'stroke-width':'2.5',fill:'none','stroke-linecap':'round','stroke-linejoin':'round'};
+    if(d.dash)la['stroke-dasharray']='6 4';
+    s.appendChild(se('path',la));
+    for(j=0;j<pts.length;j++){
+      var c=se('circle',{cx:pts[j][0].toFixed(1),cy:pts[j][1].toFixed(1),r:'4',fill:col,stroke:'#fff','stroke-width':'2'});
+      tip(c,labels[j]+': '+fY(d.data[j]));s.appendChild(c);
+    }
+  }
+  if(series.length>1){
+    for(i=0;i<series.length;i++){
+      var col2=series[i].color||COLS[i],lx=x0+i*180;
+      var la2={x1:lx,y1:H-8,x2:lx+16,y2:H-8,stroke:col2,'stroke-width':'2.5'};
+      if(series[i].dash)la2['stroke-dasharray']='5 3';
+      s.appendChild(se('line',la2));
+      s.appendChild(se('circle',{cx:lx+8,cy:H-8,r:'3',fill:col2}));
+      addTxt(s,lx+20,H-4,series[i].label||'',{'font-size':'10',fill:'#666666'});
+    }
+  }
+}
+
+// ── DONUT CHART ─────────────────────────────────────
+function donutC(id,segs,onClick){
+  var W=400,H=220,s=mkSVG(id,W,H);
+  var cx=108,cy=110,r=82,ri=50;
+  var total=0;for(var i=0;i<segs.length;i++)total+=segs[i].v;
+  var ang=-Math.PI/2;
+  for(i=0;i<segs.length;i++){
+    var sg=segs[i],da=(sg.v/total)*2*Math.PI,ea=ang+da;
+    var c0=Math.cos(ang),s0=Math.sin(ang),c1=Math.cos(ea),s1=Math.sin(ea);
+    var x1s=cx+r*c0,y1s=cy+r*s0,x1e=cx+r*c1,y1e=cy+r*s1;
+    var x2s=cx+ri*c1,y2s=cy+ri*s1,x2e=cx+ri*c0,y2e=cy+ri*s0;
+    var lg=da>Math.PI?1:0;
+    var pd='M '+x1s.toFixed(2)+' '+y1s.toFixed(2)+
+           ' A '+r+' '+r+' 0 '+lg+' 1 '+x1e.toFixed(2)+' '+y1e.toFixed(2)+
+           ' L '+x2s.toFixed(2)+' '+y2s.toFixed(2)+
+           ' A '+ri+' '+ri+' 0 '+lg+' 0 '+x2e.toFixed(2)+' '+y2e.toFixed(2)+' Z';
+    var p=se('path',{d:pd,fill:sg.col,stroke:'#fff','stroke-width':'3'});
+    tip(p,sg.nm+': '+sg.v+' items ('+Math.round(sg.v/total*100)+'%)');
+    p.style.cursor='pointer';
+    (function(idx,seg){p.onclick=function(){if(onClick)onClick(idx,seg);};})(i,sg);
+    s.appendChild(p);
+    if(da>0.28){
+      var ma=ang+da/2;
+      var lt=se('text',{x:(cx+(r+ri)/2*Math.cos(ma)).toFixed(2),y:(cy+(r+ri)/2*Math.sin(ma)+4).toFixed(2),'text-anchor':'middle','font-size':'11.5',fill:'#fff','font-weight':'bold'});
+      lt.textContent=Math.round(sg.v/total*100)+'%';s.appendChild(lt);
+    }
+    ang=ea;
+  }
+  var ct=se('text',{x:cx,y:cy-6,'text-anchor':'middle','font-size':'24','font-weight':'bold',fill:'#1D2D3E'});
+  ct.textContent=total;s.appendChild(ct);
+  var cl2=se('text',{x:cx,y:cy+14,'text-anchor':'middle','font-size':'10.5',fill:'#666666'});
+  cl2.textContent='Total Items';s.appendChild(cl2);
+  for(i=0;i<segs.length;i++){
+    var ly=28+i*36;
+    s.appendChild(se('rect',{x:235,y:ly-11,width:13,height:13,fill:segs[i].col,rx:2}));
+    var lt2=se('text',{x:253,y:ly,'font-size':'12',fill:'#1D2D3E','font-weight':'600'});lt2.textContent=segs[i].nm;s.appendChild(lt2);
+    var pv=se('text',{x:390,y:ly,'text-anchor':'end','font-size':'12',fill:segs[i].col,'font-weight':'bold'});pv.textContent=segs[i].v+' items';s.appendChild(pv);
+  }
+}
+
+// ── VARIANCE BAR ────────────────────────────────────
+function varBar(id,labels,vals){
+  var W=500,H=235,x0=50,y0=18,x1=492,y1=H-30,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var am=0;for(var i=0;i<vals.length;i++){var av=Math.abs(vals[i]);if(av>am)am=av;}am*=1.3;
+  var mid=y0+cH/2;
+  var refs=[-am,-am/2,0,am/2,am];
+  for(i=0;i<refs.length;i++){
+    var v=refs[i],y=mid-(v/am)*(cH/2);
+    var gy=v===0?'#989898':'#E5E5E5';
+    s.appendChild(se('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:gy,'stroke-width':v===0?'1.5':'1'}));
+    addTxt(s,x0-5,y+4,(v>0?'+':'')+Math.round(v)+'%',{'text-anchor':'end','font-size':'9.5',fill:'#666666'});
+  }
+  var n=labels.length,slot=cW/n,bW=slot*0.7;
+  for(i=0;i<n;i++){
+    var val=vals[i],bH=Math.abs(val)/am*(cH/2);
+    var col=val>15?'#BB0000':val<-10?'#30914C':'#0070F2';
+    var by=val>=0?mid-bH:mid;
+    var r=se('rect',{x:x0+i*slot+slot*0.15,y:by,width:bW,height:bH,fill:col,rx:2});
+    tip(r,labels[i]+': '+(val>0?'+':'')+val+'%');s.appendChild(r);
+    var lbl=labels[i];if(lbl.length>7)lbl=lbl.slice(0,6)+'…';
+    addTxt(s,x0+i*slot+slot/2,y1+13,lbl,{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+    addTxt(s,x0+i*slot+slot/2,val>=0?by-3:by+bH+10,(val>0?'+':'')+val+'%',{'text-anchor':'middle','font-size':'8.5',fill:col,'font-weight':'bold'});
+  }
+  var lgd=[{col:'#AB0D82',nm:'Spike >+15%'},{col:'#098E7E',nm:'Favorable <-10%'},{col:'#00338D',nm:'Normal'}];
+  for(i=0;i<lgd.length;i++){
+    var lx=x0+i*145;
+    s.appendChild(se('rect',{x:lx,y:H-14,width:10,height:10,fill:lgd[i].col,rx:2}));
+    addTxt(s,lx+13,H-4,lgd[i].nm,{'font-size':'10',fill:'#666666'});
+  }
+}
+
+// ── BUBBLE CHART ────────────────────────────────────
+function bubbleC(id,pts){
+  var W=500,H=265,x0=58,y0=18,x1=490,y1=242,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var xs=[],ys=[],i;
+  for(i=0;i<pts.length;i++){xs.push(pts[i].x);ys.push(pts[i].y);}
+  var mnX=Math.min.apply(null,xs)*0.7,mxX=Math.max.apply(null,xs)*1.25;
+  var mnY=0,mxY=Math.max.apply(null,ys)*1.22;
+  hgrid(s,x0,y0,x1,y1,5);
+  for(i=0;i<=5;i++){
+    var v=mnY+(mxY-mnY)*i/5,y=y1-(v-mnY)/(mxY-mnY)*cH;
+    addTxt(s,x0-5,y+4,'$'+Math.round(v/1000)+'K',{'text-anchor':'end','font-size':'9.5',fill:'#666666'});
+    var xv=mnX+(mxX-mnX)*i/5,xp=x0+(xv-mnX)/(mxX-mnX)*cW;
+    addTxt(s,xp,y1+13,Math.round(xv)+'d',{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+  }
+  var qx=x0+(30-mnX)/(mxX-mnX)*cW,qy=y1-(300000-mnY)/(mxY-mnY)*cH;
+  s.appendChild(se('rect',{x:qx,y:y0,width:x1-qx,height:qy-y0,fill:'rgba(171,13,130,.05)',stroke:'rgba(171,13,130,.2)','stroke-dasharray':'4 3',rx:4}));
+  addTxt(s,x1-4,y0+13,'⚠ High Risk Zone',{'text-anchor':'end','font-size':'9.5',fill:'rgba(171,13,130,.55)'});
+  addTxt(s,(x0+x1)/2,H-3,'Avg Invoice Delay (days)',{'text-anchor':'middle','font-size':'10.5',fill:'#666666'});
+  for(i=0;i<pts.length;i++){
+    var p=pts[i],px=x0+(p.x-mnX)/(mxX-mnX)*cW,py=y1-(p.y-mnY)/(mxY-mnY)*cH;
+    var c=se('circle',{cx:px.toFixed(1),cy:py.toFixed(1),r:p.r||8,fill:p.col||'#0070F2',opacity:'0.82',stroke:'#fff','stroke-width':'1.5'});
+    tip(c,p.nm+'\nDelay: '+p.x+'d | Exp: $'+Math.round(p.y/1000)+'K | Conf: '+p.cf+'%');
+    c.style.cursor='pointer';s.appendChild(c);
+    if((p.r||8)>=10){
+      var lt=se('text',{x:px.toFixed(1),y:(py-p.r-5).toFixed(1),'text-anchor':'middle','font-size':'9',fill:'#666666'});
+      lt.textContent=p.nm.split(' ')[0];s.appendChild(lt);
+    }
+  }
+}
+
+// =====================================================
+// DRAW PAGES
+// =====================================================
+function drawP1(){
+  donutC('ch-donut',
+    [{nm:'High ≥80%',v:47,col:'#098E7E'},{nm:'Medium 60–79%',v:31,col:'#FD349C'},{nm:'Low <60%',v:11,col:'#AB0D82'}],
+    function(i,sg){
+      var amts=['$2.65M','$0.89M','$0.30M'],acts=['POST ACCRUAL','REVIEW before posting','MONITOR'];
+      document.getElementById('ddt').textContent='▶ '+sg.nm;
+      document.getElementById('ddc').innerHTML='<div><div class="dil">Items</div><div class="div2" style="color:'+sg.col+'">'+sg.v+'</div></div><div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+amts[i]+'</div></div><div><div class="dil">Action</div><div class="div2" style="font-size:13px">'+acts[i]+'</div></div>';
+      document.getElementById('dr-donut').classList.add('on');
+    }
+  );
+  barH('ch-vend',VD.slice(0,5).map(function(v){return v.nm;}),VD.slice(0,5).map(function(v){return v.ex;}),
+    ['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF']);
+  document.getElementById('ch-vend').querySelector('svg').style.cursor='pointer';
+  document.getElementById('ch-vend').onclick=function(e){
+    var r=e.target.closest('rect');if(!r)return;
+    var idx=[].indexOf.call(r.parentNode.querySelectorAll('rect'),r);
+    if(idx<0||idx>=5)return;
+    var v=VD[idx];
+    document.getElementById('dvt').textContent='▶ '+v.nm;
+    document.getElementById('dvc').innerHTML='<div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+fmtK(v.ex)+'</div></div><div><div class="dil">Avg Delay</div><div class="div2">'+v.dy+'d</div></div><div><div class="dil">Confidence</div><div class="div2" style="color:'+cc(v.cf)+'">'+v.cf+'%</div></div>';
+    document.getElementById('dr-vend').classList.add('on');
+  };
+  barV('ch-gl',
+    GL.map(function(g){return g.ac;}),
+    [{data:GL.map(function(g){return g.ex;})}],
+    {fY:function(v){return '$'+Math.round(v/1000)+'K';},h:200,bc:['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF','#63EBDA']}
+  );
+  barV('ch-snap',
+    ['Feb-26','Mar-26','Apr-26','May-26'],
+    [{label:'GR/IR',data:GR.slice(8),color:'#00338D'},{label:'Manual',data:MA.slice(8),color:'#00B8F5'},{label:'ACE',data:AC.slice(8),color:'#76D2FF'}],
+    {fY:function(v){return '$'+v+'K';},h:200,stacked:true,legend:['GR/IR','Manual','ACE']}
+  );
+}
+
+function drawP2(){
+  lineC('ch-trend',MO,
+    [{label:'Exposure ($K)',data:TA,color:'#00338D',fill:true},{label:'Item Count',data:TC,color:'#00B8F5',dash:true}],
+    {fY:function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);},h:255}
+  );
+  varBar('ch-var',MO,MM);
+  barV('ch-stk',MO,
+    [{label:'GR/IR',data:GR,color:'#00338D'},{label:'Manual',data:MA,color:'#00B8F5'},{label:'ACE',data:AC,color:'#76D2FF'}],
+    {fY:function(v){return '$'+v+'K';},h:225,stacked:true,legend:['GR/IR','Manual','ACE']}
+  );
+  barV('ch-sea',SM,
+    [{data:SA}],
+    {fY:function(v){return '$'+Math.round(v/1000)+'K';},h:190,bc:SA.map(function(v){return v>=3000?'#AB0D82':v>=2500?'#FD349C':'#00338D';})}
+  );
+  lineC('ch-hc',MO,[{label:'High Conf Items',data:HC,color:'#098E7E',fill:true}],{fY:function(v){return Math.round(v);},h:190});
+  lineC('ch-do',MO,[{label:'Avg Days Open',data:DO,color:'#FD349C',fill:true}],{fY:function(v){return Math.round(v)+'d';},h:190});
+}
+
+function drawP3(){
+  bubbleC('ch-bub',VD.map(function(v){return {x:v.dy,y:v.ex,r:Math.max(7,Math.sqrt(v.it)*5.5),col:cc(v.cf),nm:v.nm,cf:v.cf};}));
+  barH('ch-glh',GL.map(function(g){return g.ac+' '+g.nm;}),GL.map(function(g){return g.ex;}),
+    ['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF','#63EBDA']);
+}
+
+// =====================================================
+// TABLES
+// =====================================================
+function renderVT(){
+  document.getElementById('vtb').innerHTML=fVD.map(function(v){
+    return '<tr onclick="drillVT(\''+v.id+'\')" style="cursor:pointer"><td><b>'+v.id+'</b></td><td>'+v.nm+'</td><td><b>'+fmtK(v.ex)+'</b></td><td><span class="dc '+dc(v.dy)+'">'+v.dy+'d</span></td><td>'+v.lr+'%</td><td><div class="cbarw"><div class="cbar"><div class="cbarf" style="width:'+v.cf+'%;background:'+cc(v.cf)+'"></div></div><span class="cbarv" style="color:'+cc(v.cf)+'">'+v.cf+'%</span></div></td><td><span class="badge '+cb(v.cf)+'">'+cl(v.cf)+'</span></td><td style="text-align:center"><b>'+v.it+'</b></td></tr>';
+  }).join('');
+}
+function drillVT(id){
+  var v=null;for(var i=0;i<VD.length;i++){if(VD[i].id===id){v=VD[i];break;}}
+  if(!v)return;
+  document.getElementById('dvtt').textContent='▶ '+v.nm+' ('+v.id+')';
+  document.getElementById('dvtc').innerHTML='<div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+fmtK(v.ex)+'</div></div><div><div class="dil">Avg Delay</div><div class="div2">'+v.dy+'d</div></div><div><div class="dil">Late Rate</div><div class="div2">'+v.lr+'%</div></div><div><div class="dil">ML Confidence</div><div class="div2" style="color:'+cc(v.cf)+'">'+v.cf+'%</div></div><div><div class="dil">Open Items</div><div class="div2">'+v.it+'</div></div><div><div class="dil">Action</div><div class="div2" style="font-size:12px;color:#00338D">'+(v.cf>=80?'POST ACCRUAL':'REVIEW ITEMS')+'</div></div>';
+  document.getElementById('dr-vt').classList.add('on');
+}
+function filterVT(q){
+  q=q.toLowerCase();
+  fVD=VD.filter(function(v){return v.nm.toLowerCase().indexOf(q)>=0||v.id.toLowerCase().indexOf(q)>=0;});
+  renderVT();
+}
+function sortVT(col){
+  var keys=['id','nm','ex','dy','lr','cf','','it'];
+  var k=keys[col];if(!k)return;
+  fVD.sort(function(a,b){return typeof a[k]==='number'?b[k]-a[k]:a[k].localeCompare(b[k]);});
+  renderVT();
+}
+
+function renderWL(){
+  document.getElementById('wlb').innerHTML=fWL.map(function(w){
+    var acBtn='';
+    if(w.ac==='POST')
+      acBtn='<button class="btna" style="background:#00338D;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">POST</button>';
+    else if(w.ac==='REVIEW')
+      acBtn='<button class="btna" style="background:#FD349C;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">REVIEW</button>';
+    else if(w.ac==='MONITOR')
+      acBtn='<button class="btna" style="background:#7213EA;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">MONITOR</button>';
+    else
+      acBtn='<span style="color:#8A9BB0;font-size:12px;padding:0 8px">&#8212;</span>';
+    var dayBg=w.dy>45?'#F5E0F0':w.dy>25?'#FEE8F5':'#E0F5F3';
+    var dayCol=w.dy>45?'var(--rd)':w.dy>25?'var(--or)':'var(--gn)';
+    return '<tr>'
+      +'<td><b style="color:#0070F2;font-family:monospace;font-size:12px">'+w.po+'</b></td>'
+      +'<td style="font-weight:600">'+w.vn+'</td>'
+      +'<td style="font-size:11px;color:var(--mt)">'+w.gl+'</td>'
+      +'<td><b>'+fmtF(w.am)+'</b></td>'
+      +'<td><span style="display:inline-block;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;background:'+dayBg+';color:'+dayCol+'">'+w.dy+'d</span></td>'
+      +'<td>'+acBtn+'</td>'
+    +'</tr>';
+  }).join('');
+}
+function wlTabClick(q,btn){
+  var cols={all:'#00338D',REVIEW:'#FD349C',MONITOR:'#7213EA','NO ACTION':'#556B82'};
+  document.querySelectorAll('.wltab').forEach(function(b){
+    b.style.borderBottomColor='transparent';b.style.background='#fff';
+  });
+  btn.style.borderBottomColor=cols[q]||'#0070F2';
+  btn.style.background='#F8FAFF';
+  fWL=q==='all'?[].concat(WL):WL.filter(function(w){return w.ac===q;});
+  renderWL();
+  var sel=document.getElementById('wl-act-filter');
+  if(sel)sel.value=q==='all'?'all':q;
+}
+function filterWL(a){
+  fWL=a==='all'?[].concat(WL):WL.filter(function(w){return w.ac===a;});
+  renderWL();
+}
+function filterWLT(q){
+  q=q.toLowerCase();
+  fWL=WL.filter(function(w){return w.vn.toLowerCase().indexOf(q)>=0||w.po.indexOf(q)>=0||w.gl.toLowerCase().indexOf(q)>=0;});
+  renderWL();
+}
+function approve(po){
+  var w=null;for(var i=0;i<WL.length;i++){if(WL[i].po===po){w=WL[i];break;}}
+  if(!w)return;
+  alert('✓ Accrual '+po+' submitted for review.\n\nVendor: '+w.vn+'\nAmount: '+fmtF(w.am)+'\nConfidence: '+w.cf+'%');
+}
+
+// =====================================================
+// NAVIGATION
+// =====================================================
+function showP(id,btn){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='p2'&&!window._p2){window._p2=1;drawP2();}
+  if(id==='p3'&&!window._p3){window._p3=1;drawP3();}
+}
+function cdr(id){document.getElementById(id).classList.remove('on');}
+function applyF(){
+  var c=parseInt(document.getElementById('fK').value);
+  fWL=WL.filter(function(w){return w.cf>=c;});
+  fVD=VD.filter(function(v){return v.cf>=c;});
+  renderWL();renderVT();
+}
+function doRefresh(){
+  var b=document.querySelector('.btnr');b.textContent='↻ Loading...';b.disabled=true;
+  setTimeout(function(){b.textContent='↻ Refresh Data';b.disabled=false;},1200);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+window.onload=function(){
+  drawP1();
+  renderVT();
+  renderWL();
+};
+</script>
+</body>
