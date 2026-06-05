@@ -232,24 +232,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--bll)}
 <!-- PAGE 3: VENDOR & GL INTEL -->
 <div id="p3" class="pg">
   <div class="pt">Vendor &amp; GL Intelligence</div>
-  <div class="ps">Delay profiles &middot; GL exposure &middot; ML risk scoring &middot; Click any vendor row to drill down to invoice level</div>
+  <div class="ps">GL exposure &middot; ML risk scoring &middot; Vendor bubble analysis</div>
   <div class="cr c2">
     <div class="cc"><div class="ctt">Vendor Exposure vs Invoice Delay</div><div class="cst">Bubble size = open items &middot; Red zone = high risk quadrant</div><div class="cb" id="ch-bub" style="height:245px"></div></div>
     <div class="cc"><div class="ctt">Top G/L Accounts by Exposure</div><div class="cst">Current period</div><div class="cb" id="ch-glh" style="height:245px"></div></div>
-  </div>
-  <div class="tc">
-    <div class="th"><div class="tt2">Vendor Delay Profile &amp; Risk Scoring</div><input class="ts" type="text" placeholder="Search vendor..." oninput="filterVT(this.value)"></div>
-    <table><thead><tr><th onclick="sortVT(0)">ID</th><th onclick="sortVT(1)">Vendor Name</th><th onclick="sortVT(2)">Exposure</th><th onclick="sortVT(3)">Avg Delay</th><th onclick="sortVT(4)">Late Rate</th><th onclick="sortVT(5)">ML Confidence</th><th>Risk</th><th onclick="sortVT(7)">Items</th></tr></thead>
-    <tbody id="vtb"></tbody></table>
-  </div>
-  <div id="dr-vt" class="dr">
-    <span class="drc" onclick="cdr('dr-vt')">&#10005;</span>
-    <div class="drt" id="dvtt"></div>
-    <div class="drg" id="dvtc"></div>
-    <div class="inv-tbl" id="inv-tbl-wrap" style="display:none">
-      <table><thead><tr><th>Invoice ID</th><th>PO Number</th><th>Invoice Date</th><th>Amount</th><th>Days Open</th><th>Status</th></tr></thead>
-      <tbody id="inv-tb"></tbody></table>
-    </div>
   </div>
 </div>
 
@@ -729,32 +715,6 @@ function drawP6(){
 // =====================================================
 // TABLES
 // =====================================================
-function renderVT(){
-  document.getElementById('vtb').innerHTML=fVD.map(function(v){
-    return '<tr onclick="drillVT(\''+v.id+'\')" style="cursor:pointer"><td><b>'+v.id+'</b></td><td>'+v.nm+'</td><td><b>'+fmtK(v.ex)+'</b></td><td><span class="dc '+dc(v.dy)+'">'+v.dy+'d</span></td><td>'+v.lr+'%</td><td><div class="cbarw"><div class="cbar"><div class="cbarf" style="width:'+v.cf+'%;background:'+cc(v.cf)+'"></div></div><span class="cbarv" style="color:'+cc(v.cf)+'">'+v.cf+'%</span></div></td><td><span class="badge '+cb(v.cf)+'">'+cl(v.cf)+'</span></td><td style="text-align:center"><b>'+v.it+'</b></td></tr>';
-  }).join('');
-}
-function drillVT(id){
-  var v=null;for(var i=0;i<VD.length;i++){if(VD[i].id===id){v=VD[i];break;}}
-  if(!v)return;
-  document.getElementById('dvtt').textContent='▶ '+v.nm+' ('+v.id+')';
-  document.getElementById('dvtc').innerHTML='<div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+fmtK(v.ex)+'</div></div><div><div class="dil">Avg Delay</div><div class="div2">'+v.dy+'d</div></div><div><div class="dil">Late Rate</div><div class="div2">'+v.lr+'%</div></div><div><div class="dil">ML Confidence</div><div class="div2" style="color:'+cc(v.cf)+'">'+v.cf+'%</div></div><div><div class="dil">Open Items</div><div class="div2">'+v.it+'</div></div><div><div class="dil">Action</div><div class="div2" style="font-size:12px;color:#00338D">'+(v.cf>=80?'POST ACCRUAL':'REVIEW ITEMS')+'</div></div>';
-  var invWrap=document.getElementById('inv-tbl-wrap');
-  var invs=INV[v.id];
-  if(invs){
-    document.getElementById('inv-tb').innerHTML=invs.map(function(inv){
-      var stCol=inv.st==='Open'?'#AB0D82':inv.st==='Matched'?'#098E7E':'#F5A623';
-      return '<tr><td><b style="color:#0070F2;font-family:monospace;font-size:11px">'+inv.inv+'</b></td><td style="font-size:11px">'+inv.po+'</td><td style="font-size:11px">'+inv.dt+'</td><td><b style="font-size:12px">'+fmtK(inv.am)+'</b></td><td><span class="dc '+dc(inv.dy)+'">'+inv.dy+'d</span></td><td><b style="color:'+stCol+';font-size:11px">'+inv.st+'</b></td></tr>';
-    }).join('');
-    invWrap.style.display='block';
-  } else {
-    invWrap.style.display='none';
-  }
-  document.getElementById('dr-vt').classList.add('on');
-}
-function filterVT(q){q=q.toLowerCase();fVD=VD.filter(function(v){return v.nm.toLowerCase().indexOf(q)>=0||v.id.toLowerCase().indexOf(q)>=0;});renderVT();}
-function sortVT(col){var keys=['id','nm','ex','dy','lr','cf','','it'];var k=keys[col];if(!k)return;fVD.sort(function(a,b){return typeof a[k]==='number'?b[k]-a[k]:a[k].localeCompare(b[k]);});renderVT();}
-
 function renderML(){
   document.getElementById('ml-tb').innerHTML=fML.map(function(c){
     var sigH=c.sigs.map(sigBadge).join('');
@@ -882,7 +842,7 @@ function applyF(){
   fWL=WL.filter(function(w){return w.cf>=c;});
   fVD=VD.filter(function(v){return v.cf>=c;});
   fML=ML_CANDS.filter(function(m){return m.cf>=c;});
-  renderWL();renderVT();renderML();
+  renderWL();renderML();
 }
 function doRefresh(){
   var b=document.querySelector('.btnr');b.textContent='↻ Loading...';b.disabled=true;
@@ -894,7 +854,6 @@ function doRefresh(){
 // =====================================================
 window.onload=function(){
   drawP1();
-  renderVT();
   renderWL();
   renderML();
 };
