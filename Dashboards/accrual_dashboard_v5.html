@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-Driven Accrual Matching | SAP BDC – Build Phase</title>
+<style>
+:root{--bl:#00338D;--bld:#0C233C;--bll:#ACEAFF;--gn:#098E7E;--or:#FD349C;--rd:#AB0D82;--go:#FD349C;--pu:#7213EA;--bg:#F5F6F7;--wh:#fff;--br:#D9DADB;--tx:#1D2D3E;--mt:#556B82;--sh:#0C233C}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+.shell{background:var(--sh);color:#fff;padding:0 18px;height:44px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.shl{display:flex;align-items:center;gap:10px}.brand{font-size:18px;font-weight:700}.sep{color:rgba(255,255,255,.35);font-size:20px}.apn{font-size:13px;color:rgba(255,255,255,.8)}
+.shr{display:flex;align-items:center;gap:14px;font-size:12px;color:rgba(255,255,255,.7)}
+.sbg{background:var(--bl);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.sbg2{background:#7213EA;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.spike{background:#FEE8F5;border-left:4px solid var(--or);padding:9px 18px;font-size:13px;color:#6D0055;display:flex;align-items:center;gap:8px}
+.spike strong{color:var(--or)}
+.fb{background:#fff;border-bottom:1px solid var(--br);padding:8px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.fb label{font-size:11px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.fb select{border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px;background:#fff;cursor:pointer}
+.fb select:focus{outline:none;border-color:var(--bl)}
+.fdv{width:1px;height:22px;background:var(--br)}
+.btnr{margin-left:auto;background:var(--bl);color:#fff;border:none;padding:6px 14px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:700}
+.btnr:hover{background:var(--bld)}
+.tabs{background:#fff;border-bottom:2px solid var(--br);padding:0 18px;display:flex;overflow-x:auto}
+.tab{padding:11px 16px;border:none;background:none;font-size:13px;color:var(--mt);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--bl)}.tab.on{color:var(--bl);border-bottom-color:var(--bl);font-weight:700}
+.pg{display:none;padding:16px 18px}.pg.on{display:block}
+.pt{font-size:17px;font-weight:700;margin-bottom:3px}.ps{font-size:12px;color:var(--mt);margin-bottom:14px}
+.kr{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:14px}
+.kc{background:#fff;border:1px solid var(--br);border-radius:8px;padding:15px 16px;position:relative;overflow:hidden;transition:box-shadow .2s}
+.kc:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:8px 8px 0 0}
+.kc.bl::before{background:var(--bl)}.kc.gn::before{background:var(--gn)}.kc.or::before{background:var(--or)}.kc.rd::before{background:var(--rd)}.kc.pu::before{background:var(--pu)}
+.kl{font-size:11px;color:var(--mt);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:6px}
+.kv{font-size:26px;font-weight:700;line-height:1}.ks{font-size:12px;color:var(--mt);margin-top:4px}
+.kt{font-size:12px;font-weight:700;margin-top:3px}.kt.up{color:var(--rd)}.kt.dn{color:var(--gn)}
+.cr{display:grid;gap:13px;margin-bottom:14px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c4{grid-template-columns:1fr 1fr 1fr 1fr}.c12{grid-template-columns:1fr 2fr}.c21{grid-template-columns:2fr 1fr}
+.cc{background:#fff;border:1px solid var(--br);border-radius:8px;padding:15px 16px;transition:box-shadow .2s}
+.cc:hover{box-shadow:0 4px 14px rgba(0,0,0,.07)}
+.ctt{font-size:13px;font-weight:700;margin-bottom:2px}.cst{font-size:11px;color:var(--mt);margin-bottom:9px}
+.cb{width:100%}
+.tc{background:#fff;border:1px solid var(--br);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.th{padding:11px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.tt2{font-size:13px;font-weight:700}
+.ts{border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px;width:190px}
+.ts:focus{outline:none;border-color:var(--bl)}
+table{width:100%;border-collapse:collapse}
+th{background:#F8F9FA;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);border-bottom:1px solid var(--br);cursor:pointer;white-space:nowrap}
+th:hover{color:var(--bl);background:#EEF0F2}
+td{padding:9px 12px;border-bottom:1px solid #F0F1F2;font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--bll)}
+.badge{display:inline-block;padding:3px 9px;border-radius:11px;font-size:11px;font-weight:700;white-space:nowrap}
+.bH{background:#E0F5F3;color:#098E7E}.bM{background:#FEE8F5;color:#AB0D82}.bL{background:#F5E0F0;color:#AB0D82}
+.bPOST{background:#EBF0FC;color:#00338D}.bREVIEW{background:#FEE8F5;color:#AB0D82}.bMONITOR{background:#F0E6FD;color:#7213EA}.bNO{background:#ECEFF1;color:#455A64}
+.cbarw{display:flex;align-items:center;gap:7px}
+.cbar{height:7px;border-radius:4px;background:#E0E0E0;flex:1;min-width:55px;overflow:hidden}
+.cbarf{height:100%;border-radius:4px}
+.cbarv{font-size:12px;font-weight:700;min-width:30px;text-align:right}
+.dc{display:inline-block;padding:2px 7px;border-radius:9px;font-size:11px;font-weight:700}
+.dH{background:#F5E0F0;color:var(--rd)}.dM{background:#FEE8F5;color:var(--go)}.dL{background:#E0F5F3;color:var(--gn)}
+.btna{color:#fff;border:none;padding:4px 11px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
+.dr{display:none;background:var(--bll);border:1px solid #76D2FF;border-radius:8px;padding:13px 16px;margin-top:9px}
+.dr.on{display:block}
+.drt{font-size:13px;font-weight:700;color:var(--bld);margin-bottom:7px}
+.drc{float:right;cursor:pointer;color:var(--mt);font-size:16px}
+.drg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dil{font-size:11px;color:var(--mt);text-transform:uppercase;margin-bottom:2px}
+.div2{font-size:16px;font-weight:700}
+.pft{text-align:center;padding:16px;font-size:11px;color:var(--mt)}
+/* === NEW BUILD PHASE STYLES === */
+.sig{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;margin:1px 2px 1px 0;white-space:nowrap}
+.sig-gr{background:#EBF0FC;color:#00338D}.sig-gl{background:#E0F5F3;color:#098E7E}
+.sig-vd{background:#FEE8F5;color:#AB0D82}.sig-sp{background:#F0E6FD;color:#7213EA}
+.ctag{display:inline-block;background:#F0E6FD;color:#7213EA;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-left:6px;vertical-align:middle}
+.model-card{background:linear-gradient(135deg,#0C233C 0%,#00338D 100%);color:#fff;border-radius:8px;padding:15px 18px;margin-bottom:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.model-stat{text-align:center}.model-stat .mv{font-size:22px;font-weight:700;line-height:1}.model-stat .ml{font-size:10px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+.model-divider{width:1px;height:44px;background:rgba(255,255,255,.2)}
+.inv-tbl{margin-top:10px;border:1px solid #C0D8F8;border-radius:6px;overflow:hidden}
+.inv-tbl table{width:100%}
+.inv-tbl th{background:#EBF0FC;color:#00338D;font-size:10px;padding:6px 10px}
+.inv-tbl td{font-size:12px;padding:6px 10px;border-bottom:1px solid #EBF0FC}
+.inv-tbl tr:last-child td{border-bottom:none}
+.di-flow{display:flex;gap:0;align-items:stretch;margin-bottom:14px;overflow-x:auto}
+.di-layer{flex:1;min-width:170px}
+.di-lhdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mt);text-align:center;padding:6px 0 8px}
+.di-box{background:#fff;border:1px solid var(--br);border-radius:8px;padding:11px 13px;margin:0 6px 8px;position:relative}
+.di-box.src{border-left:4px solid #00338D}.di-box.proc{border-left:4px solid #098E7E}.di-box.out{border-left:4px solid #7213EA}
+.di-box-t{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:3px}
+.di-box-s{font-size:10px;color:var(--mt)}
+.di-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;flex-shrink:0}
+.di-dot.ok{background:#00C0AE}.di-dot.warn{background:#FD349C}.di-dot.sync{background:#F5A623}
+.di-status{display:flex;align-items:center;font-size:10px;color:var(--mt);margin-top:5px}
+.di-arrow{display:flex;align-items:center;padding:0 2px;flex-shrink:0;color:#98A8B8;font-size:22px;align-self:center;margin-top:20px}
+.di-sync-tbl td{font-size:12px}.di-sync-tbl th{font-size:10px}
+.joule-banner{background:linear-gradient(135deg,#0C233C 0%,#3B1D8A 100%);color:#fff;border-radius:8px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.joule-icon{font-size:32px;flex-shrink:0}
+.joule-title{font-size:16px;font-weight:700;margin-bottom:2px}
+.joule-sub{font-size:12px;color:rgba(255,255,255,.65)}
+.joule-chips{margin-bottom:14px}
+.joule-chip{display:inline-block;background:#fff;color:#00338D;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer;margin:4px;border:1px solid #C3D4F0;transition:all .15s}
+.joule-chip:hover{background:#00338D;color:#fff;border-color:#00338D}
+.joule-chat{background:#fff;border:1px solid var(--br);border-radius:8px;overflow:hidden}
+.joule-msgs{padding:16px;min-height:260px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.msg-u{display:flex;justify-content:flex-end}
+.msg-a{display:flex;justify-content:flex-start;gap:8px}
+.joule-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3B1D8A,#00338D);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px}
+.msg-bubble-u{background:#00338D;color:#fff;padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:13px;max-width:72%;line-height:1.5}
+.msg-bubble-a{background:#F5F6F7;color:var(--tx);padding:9px 14px;border-radius:4px 16px 16px 16px;font-size:13px;max-width:80%;border:1px solid var(--br);line-height:1.5}
+.msg-bubble-a strong{color:#00338D}
+.msg-bubble-a .kpi-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.msg-bubble-a .kpi-pill{background:#EBF0FC;border-radius:8px;padding:5px 10px;font-size:12px}
+.msg-bubble-a .kpi-pill b{color:#00338D;display:block;font-size:15px}
+.joule-input-row{border-top:1px solid var(--br);padding:10px 14px;display:flex;gap:8px}
+.joule-inp{flex:1;border:1px solid var(--br);border-radius:20px;padding:8px 14px;font-size:13px;outline:none}
+.joule-inp:focus{border-color:var(--bl)}
+.joule-send{background:var(--bl);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer}
+.joule-send:hover{background:var(--bld)}
+.joule-disclaimer{font-size:10px;color:var(--mt);text-align:center;padding:6px;border-top:1px solid var(--br)}
+@media(max-width:900px){.kr,.c2,.c12,.c21,.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.kr,.c3{grid-template-columns:1fr}.shr{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="shl"><span class="brand">SAP</span><span class="sep">|</span><span class="apn">AI-Driven Accrual Matching &nbsp;·&nbsp; SAP Business Data Cloud</span></div>
+  <div class="shr"><span>ML Engine: <b style="color:#00C0AE">&#9679; Active</b></span><span class="sbg2">Build Phase</span><span>Company: <b style="color:#fff">IACM Corp</b></span><span>May 2026</span></div>
+</div>
+<div class="spike"><span>&#9888;</span><span><strong>Seasonal Spike Detected:</strong> May 2026 exposure is <strong>+23.9%</strong> above April baseline. Q1/Q2 boundary pattern confirmed. 18 new high-confidence items in last 24h.</span></div>
+<div class="fb">
+  <label>Filters</label><div class="fdv"></div>
+  <label>Company Code</label>
+  <select id="fC"><option value="all">All Companies</option><option value="1000">1000 – IACM Corp US</option><option value="2000">2000 – IACM Corp EU</option><option value="3000">3000 – IACM Corp LATAM</option></select>
+  <label>Fiscal Period</label>
+  <select id="fP"><option value="cur">May 2026 (Current)</option><option value="q1">Q1 2026</option><option value="q4">Q4 2025</option><option value="ytd">YTD 2026</option><option value="12m">Rolling 12M</option></select>
+  <button class="btnr" onclick="doRefresh()">&#8635; Refresh Data</button>
+</div>
+<div class="tabs">
+  <button class="tab on"  onclick="showP('p1',this)">&#128202; Executive Summary</button>
+  <button class="tab"     onclick="showP('p5',this)">&#129302; Accrual Identification</button>
+  <button class="tab"     onclick="showP('p2',this)">&#128200; Trends &amp; Spikes</button>
+  <button class="tab"     onclick="showP('p3',this)">&#127981; Vendor &amp; GL Intel</button>
+  <button class="tab"     onclick="showP('p6',this)">&#128279; Data Integration</button>
+  <button class="tab"     onclick="showP('p4',this)">&#128203; Accrual Worklist</button>
+  <button class="tab"     onclick="showP('p7',this)">&#129303; Joule / Just Ask</button>
+</div>
+
+<!-- PAGE 1: EXECUTIVE SUMMARY -->
+<div id="p1" class="pg on">
+  <div class="pt">Executive Summary</div>
+  <div class="ps">Real-time accrual exposure &middot; AI confidence scoring via Databricks ML &middot; SAP Datasphere Foundation Service</div>
+  <div class="kc bl" style="margin-bottom:14px;padding:20px 24px">
+    <div class="kl">Total Accrual Exposure</div>
+    <div class="kv" style="font-size:38px">$3.84M</div>
+    <div class="ks" style="font-size:13px">89 open items &middot; May 2026</div>
+    <div class="kt up" style="font-size:13px">&#9650; +23.9% vs. prior period</div>
+  </div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Top 5 Vendors by Accrual Exposure</div><div class="cst">Current period &middot; click bar for detail</div><div class="cb" id="ch-vend" style="height:280px"></div>
+      <div id="dr-vend" class="dr"><span class="drc" onclick="cdr('dr-vend')">&#10005;</span><div class="drt" id="dvt"></div><div class="drg" id="dvc"></div></div></div>
+    <div class="cc"><div class="ctt">Exposure by G/L Account</div><div class="cst">Top accounts driving accrual risk</div><div class="cb" id="ch-gl" style="height:280px"></div></div>
+  </div>
+</div>
+
+<!-- PAGE 5: ACCRUAL IDENTIFICATION -->
+<div id="p5" class="pg">
+  <div class="pt">Accrual Identification <span class="ctag">ML-Powered</span></div>
+  <div class="ps">Multi-signal ML pattern recognition &middot; GL history &middot; GR/IR gaps &middot; Vendor delay profiles &middot; Seasonal patterns</div>
+  <div class="model-card">
+    <div class="model-stat"><div class="mv">XGBoost 3.1</div><div class="ml">Model Version</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv">94.2%</div><div class="ml">Precision</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv">91.7%</div><div class="ml">Recall</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv">0.93</div><div class="ml">F1 Score</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv">24M</div><div class="ml">GL Records Scanned</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv">May 19</div><div class="ml">Last Retrain</div></div>
+    <div class="model-divider"></div>
+    <div class="model-stat"><div class="mv" style="color:#00C0AE">&#9679; Live</div><div class="ml">Databricks Status</div></div>
+  </div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Signal Type Distribution</div><div class="cst">Items identified by primary signal &middot; May 2026</div><div class="cb" id="ch-sig" style="height:220px"></div></div>
+    <div class="cc"><div class="ctt">Pattern Score Distribution</div><div class="cst">Histogram of composite ML scores across all candidates</div><div class="cb" id="ch-psd" style="height:220px"></div></div>
+  </div>
+  <div class="tc">
+    <div class="th">
+      <div class="tt2">ML-Identified Accrual Candidates &mdash; May 2026</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="ml-sig-filter" onchange="filterML(this.value)" style="border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px">
+          <option value="all">All Signals</option>
+          <option value="GR/IR Gap">GR/IR Gap</option>
+          <option value="GL History">GL History Pattern</option>
+          <option value="Vendor Delay">Vendor Delay</option>
+          <option value="Seasonal">Seasonal Spike</option>
+        </select>
+        <input class="ts" type="text" placeholder="Search vendor..." oninput="filterMLT(this.value)">
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Candidate ID</th><th>Vendor</th><th>G/L Account</th>
+        <th>Signals Fired</th><th>Pattern Score</th><th>Confidence</th><th>Rec. Action</th><th></th>
+      </tr></thead>
+      <tbody id="ml-tb"></tbody>
+    </table>
+  </div>
+  <div id="dr-ml" class="dr" style="border-color:#98E4DD">
+    <span class="drc" onclick="cdr('dr-ml')">&#10005;</span>
+    <div class="drt" id="dr-ml-t"></div>
+    <div id="dr-ml-c"></div>
+  </div>
+</div>
+
+<!-- PAGE 2: TRENDS & SPIKES -->
+<div id="p2" class="pg">
+  <div class="pt">Monthly Trends &amp; Seasonal Spike Indicators</div>
+  <div class="ps">12-month rolling &middot; MoM variance &middot; Spike threshold &plusmn;15%</div>
+  <div class="cr"><div class="cc"><div class="ctt">Total Accrual Exposure — 12-Month Rolling Trend</div><div class="cst">Jun 2025–May 2026 &middot; Exposure ($K) and Item Count</div><div class="cb" id="ch-trend" style="height:255px"></div></div></div>
+  <div class="cr">
+    <div class="cc"><div class="ctt">Month-over-Month Variance (%)</div><div class="cst">Red = spike &gt;+15% &middot; Green = favorable decline</div><div class="cb" id="ch-var" style="height:225px"></div></div>
+  </div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Seasonal Avg by Fiscal Period</div><div class="cst">Historical average exposure</div><div class="cb" id="ch-sea" style="height:190px"></div></div>
+    <div class="cc"><div class="ctt">Avg Days Open — Trend</div><div class="cst">Average age of open accrual items</div><div class="cb" id="ch-do" style="height:190px"></div></div>
+  </div>
+</div>
+
+<!-- PAGE 3: VENDOR & GL INTEL -->
+<div id="p3" class="pg">
+  <div class="pt">Vendor &amp; GL Intelligence</div>
+  <div class="ps">Delay profiles &middot; GL exposure &middot; ML risk scoring &middot; Click any vendor row to drill down to invoice level</div>
+  <div class="cr c2">
+    <div class="cc"><div class="ctt">Vendor Exposure vs Invoice Delay</div><div class="cst">Bubble size = open items &middot; Red zone = high risk quadrant</div><div class="cb" id="ch-bub" style="height:245px"></div></div>
+    <div class="cc"><div class="ctt">Top G/L Accounts by Exposure</div><div class="cst">Current period</div><div class="cb" id="ch-glh" style="height:245px"></div></div>
+  </div>
+  <div class="tc">
+    <div class="th"><div class="tt2">Vendor Delay Profile &amp; Risk Scoring</div><input class="ts" type="text" placeholder="Search vendor..." oninput="filterVT(this.value)"></div>
+    <table><thead><tr><th onclick="sortVT(0)">ID</th><th onclick="sortVT(1)">Vendor Name</th><th onclick="sortVT(2)">Exposure</th><th onclick="sortVT(3)">Avg Delay</th><th onclick="sortVT(4)">Late Rate</th><th onclick="sortVT(5)">ML Confidence</th><th>Risk</th><th onclick="sortVT(7)">Items</th></tr></thead>
+    <tbody id="vtb"></tbody></table>
+  </div>
+  <div id="dr-vt" class="dr">
+    <span class="drc" onclick="cdr('dr-vt')">&#10005;</span>
+    <div class="drt" id="dvtt"></div>
+    <div class="drg" id="dvtc"></div>
+    <div class="inv-tbl" id="inv-tbl-wrap" style="display:none">
+      <table><thead><tr><th>Invoice ID</th><th>PO Number</th><th>Invoice Date</th><th>Amount</th><th>Days Open</th><th>Status</th></tr></thead>
+      <tbody id="inv-tb"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 6: DATA INTEGRATION -->
+<div id="p6" class="pg">
+  <div class="pt">Data Integration <span class="ctag">SAP BDC</span></div>
+  <div class="ps">Live integration with SAP BDC Data Products &middot; Datasphere &middot; Databricks Delta Share &middot; SAP Analytics Cloud</div>
+
+  <div class="di-flow">
+    <div class="di-layer">
+      <div class="di-lhdr">&#128440; Source Data Products</div>
+      <div class="di-box src"><div class="di-box-t">ACDOCA_DP</div><div class="di-box-s">Universal Journal &middot; FI Postings</div><div class="di-status"><span class="di-dot ok"></span>Live &middot; 8.4M records &middot; 2m ago</div></div>
+      <div class="di-box src"><div class="di-box-t">GRIR_DP</div><div class="di-box-s">GR/IR Clearing &middot; Open Items</div><div class="di-status"><span class="di-dot ok"></span>Live &middot; 124K records &middot; 2m ago</div></div>
+      <div class="di-box src"><div class="di-box-t">PROCUREMENT_DP</div><div class="di-box-s">MM / SRM &middot; PO &amp; Invoice Data</div><div class="di-status"><span class="di-dot ok"></span>Live &middot; 310K records &middot; 5m ago</div></div>
+      <div class="di-box src"><div class="di-box-t">COSTCENTER_DP</div><div class="di-box-s">CO-CCA &middot; Cost Center Planning</div><div class="di-status"><span class="di-dot sync"></span>Syncing &middot; Last: 18m ago</div></div>
+    </div>
+    <div class="di-arrow">&#8250;</div>
+    <div class="di-layer">
+      <div class="di-lhdr">&#9881; Processing Layer</div>
+      <div class="di-box proc" style="margin-bottom:16px">
+        <div class="di-box-t">SAP Datasphere</div>
+        <div class="di-box-s">Data Harmonization &middot; Semantic Layer &middot; Accrual Data Product Assembly</div>
+        <div class="di-status" style="margin-top:6px"><span class="di-dot ok"></span>Healthy &middot; 4 spaces active</div>
+      </div>
+      <div class="di-box proc">
+        <div class="di-box-t">SAP Databricks ML Engine</div>
+        <div class="di-box-s">XGBoost Pattern Recognition &middot; Confidence Scoring &middot; Model v3.1</div>
+        <div class="di-status" style="margin-top:6px"><span class="di-dot ok"></span>Active &middot; Retrain: May 19</div>
+      </div>
+    </div>
+    <div class="di-arrow">&#8250;</div>
+    <div class="di-layer">
+      <div class="di-lhdr">&#128200; Output / Consumption</div>
+      <div class="di-box out"><div class="di-box-t">SAP Analytics Cloud</div><div class="di-box-s">Accrual Dashboard &middot; KPI Stories</div><div class="di-status"><span class="di-dot ok"></span>Published &middot; Live story</div></div>
+      <div class="di-box out"><div class="di-box-t">Accrual Worklist API</div><div class="di-box-s">S/4HANA BAPI &middot; One-click POST</div><div class="di-status"><span class="di-dot ok"></span>Connected &middot; BAPI ready</div></div>
+      <div class="di-box out"><div class="di-box-t">Delta Share Connector</div><div class="di-box-s">Cross-tenant data sharing &middot; Partner systems</div><div class="di-status"><span class="di-dot ok"></span>Active &middot; 3 shares</div></div>
+      <div class="di-box out"><div class="di-box-t">Joule / BTP</div><div class="di-box-s">Just Ask &middot; Conversational KPI access</div><div class="di-status"><span class="di-dot sync"></span>Conceptual &middot; Planned Q3 2026</div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="th"><div class="tt2">Data Product Sync Status — May 2026</div></div>
+    <table class="di-sync-tbl">
+      <thead><tr><th>Data Product</th><th>Source System</th><th>Records</th><th>Last Sync</th><th>Sync Frequency</th><th>Latency</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><b>ACDOCA_DP</b></td><td>S/4HANA (ACDOCA)</td><td>8,412,340</td><td>2 min ago</td><td>Real-time CDC</td><td>&lt;3 min</td><td><span class="badge bH">&#9679; Live</span></td></tr>
+        <tr><td><b>GRIR_DP</b></td><td>S/4HANA (BSEG/EKBE)</td><td>124,890</td><td>2 min ago</td><td>Real-time CDC</td><td>&lt;3 min</td><td><span class="badge bH">&#9679; Live</span></td></tr>
+        <tr><td><b>PROCUREMENT_DP</b></td><td>S/4HANA (EKKO/EKPO)</td><td>310,452</td><td>5 min ago</td><td>Micro-batch 5 min</td><td>&lt;8 min</td><td><span class="badge bH">&#9679; Live</span></td></tr>
+        <tr><td><b>COSTCENTER_DP</b></td><td>S/4HANA (COSS/COSP)</td><td>48,210</td><td>18 min ago</td><td>Hourly batch</td><td>&lt;65 min</td><td><span class="badge bM">&#9679; Syncing</span></td></tr>
+        <tr><td><b>ML_OUTPUT_DP</b></td><td>Databricks (Delta Lake)</td><td>89 scored items</td><td>Just now</td><td>On-demand + Scheduled</td><td>&lt;5 min</td><td><span class="badge bH">&#9679; Live</span></td></tr>
+        <tr><td><b>DELTA_SHARE_01</b></td><td>Partner: Audit Firm</td><td>Shared subset</td><td>1 hr ago</td><td>Daily push</td><td>&lt;24 hr</td><td><span class="badge bH">&#9679; Active</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cr c3">
+    <div class="cc">
+      <div class="ctt">&#128295; Datasphere Spaces</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span><b>ACCRUAL_CORE</b></span><span class="badge bH">Active</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span><b>PROCUREMENT_DS</b></span><span class="badge bH">Active</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span><b>ML_SCORING_DS</b></span><span class="badge bH">Active</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span><b>REPORTING_DS</b></span><span class="badge bH">Active</span></div>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctt">&#128202; Pipeline Throughput</div>
+      <div class="cb" id="ch-pipe" style="height:160px;margin-top:8px"></div>
+    </div>
+    <div class="cc">
+      <div class="ctt">&#9989; Integration Health</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span>BDC → Datasphere</span><span style="color:#098E7E;font-weight:700">&#10003; Healthy</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span>Datasphere → Databricks</span><span style="color:#098E7E;font-weight:700">&#10003; Healthy</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span>Databricks → SAC</span><span style="color:#098E7E;font-weight:700">&#10003; Healthy</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 10px;background:#F8F9FA;border-radius:6px"><span>BAPI → S/4HANA</span><span style="color:#098E7E;font-weight:700">&#10003; Connected</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: ACCRUAL WORKLIST (UNCHANGED) -->
+<div id="p4" class="pg">
+  <div style="display:flex;gap:13px;margin-bottom:12px;align-items:stretch">
+    <div style="display:flex;flex:1;background:#fff;border:1px solid var(--br);border-radius:8px;overflow:hidden">
+      <button class="wltab" id="wltab-all" onclick="wlTabClick('all',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid #0070F2;padding:14px 16px;cursor:pointer;background:#F0F6FF;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#0070F2;margin-bottom:6px">AUTO-POST ELIGIBLE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">4 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-rev" onclick="wlTabClick('REVIEW',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#E76500;margin-bottom:6px">EXCEPTION REVIEW QUEUE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">4 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-mon" onclick="wlTabClick('MONITOR',this)" style="flex:1;border:none;border-right:1px solid var(--br);border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B3FA0;margin-bottom:6px">WATCHLIST / OBSERVATION QUEUE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">3 <span style="font-size:13px;font-weight:500;color:var(--mt)">items</span></div>
+      </button>
+      <button class="wltab" id="wltab-no" onclick="wlTabClick('NO ACTION',this)" style="flex:1;border:none;border-bottom:3px solid transparent;padding:14px 16px;cursor:pointer;background:#fff;text-align:left">
+        <div style="font: size 20px;px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:6px">NO ACTION</div>
+        <div style="font-size:24px;font-weight:700;color:var(--tx);line-height:1">1 <span style="font-size:13px;font-weight:500;color:var(--mt)">item</span></div>
+      </button>
+    </div>
+    <div style="min-width:200px;background:#fff;border:1px solid var(--br);border-radius:8px;padding:16px 18px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:8px">TOTAL ACCRUAL EXPOSURE</div>
+      <div style="font-size:32px;font-weight:700;color:var(--tx);line-height:1">$3.84M</div>
+      <div style="font-size:12px;color:var(--mt);margin-top:6px">89 open items &middot; May 2026</div>
+      <div style="font-size:12px;font-weight:700;color:var(--rd);margin-top:4px">&#9650; +23.9% vs. prior period</div>
+    </div>
+  </div>
+  <div style="background:#FEE8F5;border-left:4px solid var(--or);border-radius:0 4px 4px 0;padding:9px 14px;font-size:12px;color:#6D0055;display:flex;align-items:flex-start;gap:8px;margin-bottom:13px">
+    <span style="font-size:15px;margin-top:1px">&#9888;</span>
+    <span><strong style="color:var(--or)">Seasonal Spike Detected:</strong> May 2026 exposure is <strong>+23.9%</strong> above April baseline. Q1/Q2 boundary pattern confirmed. <strong>18 new high-confidence items</strong> in last 24h.</span>
+  </div>
+  <div class="pt">Accrual Operations Worklist — Worklist</div>
+  <div class="ps">AI-recommended postings &middot; Databricks output &middot; Approve to trigger BAPI in S/4HANA</div>
+  <div class="tc">
+    <div class="th">
+      <div class="tt2">Recommended Accrual Items — May 2026 Period Close</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="wl-act-filter" onchange="filterWL(this.value)" style="border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px">
+          <option value="all">All Actions</option><option value="POST">POST</option><option value="REVIEW">REVIEW</option><option value="MONITOR">MONITOR</option><option value="NO ACTION">NO ACTION</option>
+        </select>
+        <input class="ts" type="text" placeholder="Search PO / Vendor..." oninput="filterWLT(this.value)">
+      </div>
+    </div>
+    <table><thead><tr><th>PO Number</th><th>Vendor</th><th>G/L Account</th><th>Exposure</th><th>Days Open</th><th>Action</th></tr></thead>
+    <tbody id="wlb"></tbody></table>
+  </div>
+</div>
+
+<!-- PAGE 7: JOULE / JUST ASK -->
+<div id="p7" class="pg">
+  <div class="joule-banner">
+    <div class="joule-icon">&#129303;</div>
+    <div>
+      <div class="joule-title">Joule &mdash; AI Accrual Assistant <span class="ctag" style="background:rgba(255,255,255,.15);color:#fff">Conceptual</span></div>
+      <div class="joule-sub">Natural language accrual investigation &middot; Powered by SAP BTP Joule &middot; Just Ask integration &middot; Planned Q3 2026</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:10px;font-size:12px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Sample Prompts — Click to Ask</div>
+  <div class="joule-chips">
+    <span class="joule-chip" onclick="jouleAsk('What are the top 3 accrual risks this period?')">&#128269; Top accrual risks this period</span>
+    <span class="joule-chip" onclick="jouleAsk('Which vendors have the highest unrecognized exposure?')">&#127981; Vendors with highest exposure</span>
+    <span class="joule-chip" onclick="jouleAsk('Show me all items with confidence above 90%')">&#129504; High-confidence items &ge;90%</span>
+    <span class="joule-chip" onclick="jouleAsk('What is causing the seasonal spike in May 2026?')">&#9888; Explain the May 2026 spike</span>
+    <span class="joule-chip" onclick="jouleAsk('How many items are ready to auto-post?')">&#9989; Auto-post eligible items</span>
+    <span class="joule-chip" onclick="jouleAsk('Compare April vs May accrual exposure')">&#128200; April vs May comparison</span>
+    <span class="joule-chip" onclick="jouleAsk('Which GL accounts are over-accrued vs budget?')">&#128440; GL accounts over budget</span>
+  </div>
+
+  <div class="joule-chat">
+    <div class="joule-msgs" id="joule-msgs">
+      <div class="msg-a">
+        <div class="joule-avatar">J</div>
+        <div class="msg-bubble-a">Hello! I'm <strong>Joule</strong>, your AI Accrual Assistant. I can help you analyze accrual exposure, investigate GR/IR gaps, and navigate the month-end close.<br><br>Try one of the sample prompts above, or type your own question about accruals.</div>
+      </div>
+    </div>
+    <div class="joule-input-row">
+      <input class="joule-inp" id="joule-inp" type="text" placeholder="Ask about accruals... (e.g. &quot;What is the exposure for Accenture?&quot;)" onkeydown="if(event.key==='Enter')jouleSubmit()">
+      <button class="joule-send" onclick="jouleSubmit()">&#9654; Ask</button>
+    </div>
+    <div class="joule-disclaimer">&#9432; Conceptual prototype &mdash; responses are simulated to demonstrate the intended Joule integration. Actual implementation via SAP BTP Joule / Just Ask API.</div>
+  </div>
+</div>
+
+<div class="pft">AI-Driven Accrual Matching &middot; SAP Business Data Cloud &middot; Build Phase Prototype v4.0 &middot; May 2026 &middot; Zero external dependencies</div>
+
+<script>
+// =====================================================
+// DATA
+// =====================================================
+var VD=[
+  {id:'V001',nm:'Accenture LLC',      ex:850000,dy:45,lr:72,cf:88,it:12},
+  {id:'V002',nm:'Deloitte Services',  ex:620000,dy:32,lr:58,cf:79,it:8},
+  {id:'V003',nm:'IBM Corp',           ex:480000,dy:28,lr:45,cf:71,it:6},
+  {id:'V004',nm:'Microsoft Licensing',ex:320000,dy:12,lr:22,cf:45,it:4},
+  {id:'V005',nm:'AWS Services',       ex:280000,dy:8, lr:15,cf:38,it:3},
+  {id:'V006',nm:'SAP SE',             ex:240000,dy:35,lr:62,cf:82,it:5},
+  {id:'V007',nm:'Oracle Corp',        ex:195000,dy:22,lr:38,cf:65,it:4},
+  {id:'V008',nm:'Cognizant',          ex:175000,dy:41,lr:68,cf:84,it:7},
+  {id:'V009',nm:'Wipro Limited',      ex:145000,dy:18,lr:30,cf:55,it:3},
+  {id:'V010',nm:'Salesforce Inc.',    ex:120000,dy:10,lr:18,cf:42,it:2}
+];
+var GL=[
+  {ac:'601000',nm:'Professional Svcs',ex:1580000,it:28,cf:82},
+  {ac:'620000',nm:'IT & Technology',  ex:920000, it:19,cf:74},
+  {ac:'630000',nm:'Maintenance',      ex:480000, it:15,cf:67},
+  {ac:'640000',nm:'Marketing',        ex:380000, it:12,cf:71},
+  {ac:'650000',nm:'Travel',           ex:280000, it:9, cf:58},
+  {ac:'660000',nm:'Utilities',        ex:200000, it:6, cf:63}
+];
+var MO=['Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26','May-26'];
+var TA=[1850,1920,1780,2100,2350,2680,3200,2900,2450,2650,3100,3840];
+var TC=[52,55,48,61,68,74,89,81,67,72,85,89];
+var MM=[-7,3.8,-7.3,18,11.9,14,19.4,-9.4,-15.5,8.2,17,23.9];
+var GR=[820,890,750,960,1100,1280,1580,1350,1120,1200,1450,1820];
+var MA=[680,710,690,800,870,980,1150,1050,900,980,1150,1380];
+var AC=[350,320,340,340,380,420,470,500,430,470,500,640];
+var SA=[2850,2300,2600,3000,3700,1950,1850,1780,2050,2400,2700,3150];
+var SM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var HC=[28,31,26,35,39,44,52,47,38,41,50,47];
+var DO=[31,29,33,36,38,41,44,42,35,37,40,38];
+var WL=[
+  {po:'4500012345',vn:'Accenture LLC',      gl:'601000 Prof. Svcs',  am:185000,dy:52,cf:94,ac:'POST'},
+  {po:'4500012346',vn:'Cognizant',           gl:'601000 Prof. Svcs',  am:142000,dy:61,cf:91,ac:'POST'},
+  {po:'4500012347',vn:'SAP SE',              gl:'620000 IT & Tech',   am:98000, dy:44,cf:87,ac:'POST'},
+  {po:'4500012348',vn:'Deloitte Services',   gl:'601000 Prof. Svcs',  am:215000,dy:38,cf:83,ac:'POST'},
+  {po:'4500012349',vn:'IBM Corp',            gl:'620000 IT & Tech',   am:76000, dy:29,cf:78,ac:'REVIEW'},
+  {po:'4500012350',vn:'Deloitte Services',   gl:'630000 Maintenance', am:54000, dy:33,cf:75,ac:'REVIEW'},
+  {po:'4500012351',vn:'Oracle Corp',         gl:'620000 IT & Tech',   am:89000, dy:25,cf:71,ac:'REVIEW'},
+  {po:'4500012352',vn:'Wipro Limited',       gl:'601000 Prof. Svcs',  am:63000, dy:21,cf:68,ac:'REVIEW'},
+  {po:'4500012353',vn:'Microsoft Licensing', gl:'620000 IT & Tech',   am:145000,dy:14,cf:52,ac:'MONITOR'},
+  {po:'4500012354',vn:'AWS Services',        gl:'620000 IT & Tech',   am:112000,dy:12,cf:45,ac:'MONITOR'},
+  {po:'4500012355',vn:'Salesforce Inc.',     gl:'640000 Marketing',   am:67000, dy:10,cf:42,ac:'MONITOR'},
+  {po:'4500012356',vn:'Amazon Web Services', gl:'650000 Travel',      am:23000, dy:8, cf:35,ac:'NO ACTION'}
+];
+var ML_CANDS=[
+  {id:'AC-2026-001',vn:'Accenture LLC',    gl:'601000',sigs:['GR/IR Gap','Vendor Delay','GL History'],ps:94,cf:94,ac:'POST'},
+  {id:'AC-2026-002',vn:'Cognizant',        gl:'601000',sigs:['GR/IR Gap','GL History'],           ps:91,cf:91,ac:'POST'},
+  {id:'AC-2026-003',vn:'SAP SE',           gl:'620000',sigs:['GL History','Seasonal Spike'],       ps:87,cf:87,ac:'POST'},
+  {id:'AC-2026-004',vn:'Deloitte Services',gl:'601000',sigs:['GR/IR Gap','Vendor Delay','Seasonal Spike'],ps:83,cf:83,ac:'POST'},
+  {id:'AC-2026-005',vn:'IBM Corp',         gl:'620000',sigs:['GL History'],                        ps:78,cf:78,ac:'REVIEW'},
+  {id:'AC-2026-006',vn:'Deloitte Services',gl:'630000',sigs:['GR/IR Gap'],                         ps:75,cf:75,ac:'REVIEW'},
+  {id:'AC-2026-007',vn:'Oracle Corp',      gl:'620000',sigs:['Vendor Delay'],                      ps:71,cf:71,ac:'REVIEW'},
+  {id:'AC-2026-008',vn:'Wipro Limited',    gl:'601000',sigs:['GL History'],                        ps:68,cf:68,ac:'REVIEW'},
+  {id:'AC-2026-009',vn:'Microsoft Licensing',gl:'620000',sigs:['Seasonal Spike'],                  ps:52,cf:52,ac:'MONITOR'},
+  {id:'AC-2026-010',vn:'AWS Services',     gl:'620000',sigs:['GL History'],                        ps:45,cf:45,ac:'MONITOR'},
+  {id:'AC-2026-011',vn:'Salesforce Inc.',  gl:'640000',sigs:['GR/IR Gap'],                         ps:42,cf:42,ac:'MONITOR'},
+  {id:'AC-2026-012',vn:'Amazon Web Svcs',  gl:'650000',sigs:['GL History'],                        ps:35,cf:35,ac:'NO ACTION'}
+];
+var INV={
+  'V001':[
+    {inv:'INV-2026-04521',po:'4500012345',dt:'2026-04-02',am:45000,dy:63,st:'Open'},
+    {inv:'INV-2026-04589',po:'4500012345',dt:'2026-04-15',am:92000,dy:50,st:'Open'},
+    {inv:'INV-2026-05001',po:'4500012345',dt:'2026-05-01',am:38000,dy:33,st:'Pending GR'},
+    {inv:'INV-2026-05112',po:'4500012399',dt:'2026-05-12',am:75000,dy:22,st:'Matched'},
+    {inv:'INV-2026-05201',po:'4500012399',dt:'2026-05-20',am:29000,dy:14,st:'Open'}
+  ],
+  'V002':[
+    {inv:'INV-2026-04410',po:'4500012348',dt:'2026-04-10',am:215000,dy:55,st:'Open'},
+    {inv:'INV-2026-05090',po:'4500012350',dt:'2026-05-09',am:54000,dy:25,st:'Pending GR'},
+    {inv:'INV-2026-05140',po:'4500012350',dt:'2026-05-14',am:88000,dy:20,st:'Open'}
+  ],
+  'V006':[
+    {inv:'INV-2026-04600',po:'4500012347',dt:'2026-04-20',am:98000,dy:44,st:'Open'},
+    {inv:'INV-2026-05050',po:'4500012347',dt:'2026-05-05',am:62000,dy:29,st:'Matched'},
+    {inv:'INV-2026-05180',po:'4500012389',dt:'2026-05-18',am:40000,dy:16,st:'Open'}
+  ]
+};
+var fVD=[].concat(VD), fWL=[].concat(WL), fML=[].concat(ML_CANDS);
+var PIPE_MO=['Jan','Feb','Mar','Apr','May'];
+var PIPE_REC=[4200,4850,5100,5600,8412];
+
+// =====================================================
+// HELPERS
+// =====================================================
+function fmtK(v){return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1000?Math.round(v/1000)+'K':v);}
+function fmtF(v){return '$'+v.toLocaleString();}
+function cc(v){return v>=80?'#098E7E':v>=60?'#FD349C':'#AB0D82';}
+function cb(v){return v>=80?'bH':v>=60?'bM':'bL';}
+function cl(v){return v>=80?'High':v>=60?'Medium':'Low';}
+function dc(d){return d>30?'dH':d>15?'dM':'dL';}
+function ab(a){return {POST:'bPOST',REVIEW:'bREVIEW',MONITOR:'bMONITOR','NO ACTION':'bNO'}[a]||'';}
+function sigBadge(s){
+  var m={'GR/IR Gap':'sig-gr','GL History':'sig-gl','Vendor Delay':'sig-vd','Seasonal Spike':'sig-sp'};
+  return '<span class="sig '+(m[s]||'sig-gl')+'">'+s+'</span>';
+}
+
+// =====================================================
+// SVG ENGINE
+// =====================================================
+var NS='http://www.w3.org/2000/svg';
+function se(tag,a){var e=document.createElementNS(NS,tag);if(a){for(var k in a){e.setAttribute(k,a[k]);}}return e;}
+function tip(e,t){var x=document.createElementNS(NS,'title');x.textContent=t;e.insertBefore(x,e.firstChild);return e;}
+function mkSVG(id,w,h){var c=document.getElementById(id);c.innerHTML='';var s=se('svg',{viewBox:'0 0 '+w+' '+h,width:'100%',height:'100%'});c.appendChild(s);return s;}
+function addTxt(s,x,y,text,a){var t=se('text',a);t.setAttribute('x',x);t.setAttribute('y',y);t.textContent=text;s.appendChild(t);return t;}
+function hgrid(s,x0,y0,x1,y1,n){for(var i=0;i<=n;i++){var y=y0+(y1-y0)*i/n;s.appendChild(se('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'#E5E5E5','stroke-width':1}));}}
+function yax(s,x0,y0,y1,mn,mx,n,fmt){for(var i=0;i<=n;i++){var v=mn+(mx-mn)*(n-i)/n;var y=y0+(y1-y0)*i/n;addTxt(s,x0-5,y+4,fmt(v),{'text-anchor':'end','font-size':'9.5',fill:'#666666'});}}
+
+function barV(id,labels,series,cfg){
+  cfg=cfg||{};
+  var W=500,H=cfg.h||255,x0=55,y0=18,x1=490,y1=H-28;
+  var cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var mx=0;var i,j;
+  if(cfg.stacked){for(i=0;i<labels.length;i++){var sm=0;for(j=0;j<series.length;j++)sm+=(series[j].data[i]||0);if(sm>mx)mx=sm;}
+  }else{for(i=0;i<series.length;i++){for(j=0;j<series[i].data.length;j++){if(series[i].data[j]>mx)mx=series[i].data[j];}}}
+  mx=Math.ceil(mx*1.18);
+  var fY=cfg.fY||function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);};
+  var COLS=cfg.colors||['#00338D','#1E49E2','#76D2FF','#AB0D82','#7213EA'];
+  hgrid(s,x0,y0,x1,y1,5);yax(s,x0,y0,y1,0,mx,5,fY);
+  var n=labels.length,slot=cW/n;
+  for(i=0;i<n;i++){
+    var yBase=y1;
+    for(j=0;j<series.length;j++){
+      var val=series[j].data[i]||0,bH2=(val/mx)*cH,bx,by,bw,col;
+      if(cfg.stacked){bx=x0+i*slot+slot*0.15;bw=slot*0.7;by=yBase-bH2;col=series[j].color||COLS[j];yBase-=bH2;
+      }else if(series.length>1){bw=slot*0.72/series.length;bx=x0+i*slot+slot*0.14+j*bw;by=y1-bH2;col=series[j].color||COLS[j];
+      }else{bx=x0+i*slot+slot*0.15;bw=slot*0.7;by=y1-bH2;col=(cfg.bc&&cfg.bc[i])||series[j].color||COLS[0];}
+      var r=se('rect',{x:bx,y:Math.max(by,y0),width:bw,height:Math.min(bH2,cH),fill:col,rx:2});
+      tip(r,labels[i]+': '+fY(val));r.style.cursor='pointer';s.appendChild(r);
+    }
+    var lbl=labels[i];if(lbl.length>9)lbl=lbl.slice(0,8)+'…';
+    addTxt(s,x0+i*slot+slot/2,y1+14,lbl,{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+  }
+  if(cfg.legend&&series.length>1){for(i=0;i<series.length;i++){var col2=series[i].color||COLS[i],lx=x0+i*140;s.appendChild(se('rect',{x:lx,y:H-14,width:10,height:10,fill:col2,rx:2}));addTxt(s,lx+13,H-4,cfg.legend[i]||series[i].label||'',{'font-size':'10',fill:'#666666'});}}
+}
+
+function barH(id,labels,vals,colors,cfg){
+  cfg=cfg||{};
+  var W=500,H=Math.max(200,labels.length*36+50);
+  var x0=cfg.x0||152,y0=12,x1=462,y1=H-22,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var mx=0;for(var i=0;i<vals.length;i++){if(vals[i]>mx)mx=vals[i];}mx*=1.18;
+  var fX=cfg.fX||function(v){return '$'+Math.round(v/1000)+'K';};
+  for(i=0;i<=4;i++){var x=x0+cW*i/4;s.appendChild(se('line',{x1:x,y1:y0,x2:x,y2:y1,stroke:'#E5E5E5','stroke-width':1}));addTxt(s,x,y1+12,fX(mx*i/4),{'text-anchor':'middle','font-size':'9',fill:'#666666'});}
+  var slot=cH/labels.length;
+  for(i=0;i<labels.length;i++){
+    var bHh=slot*0.58,y=y0+i*slot+(slot-bHh)/2,bW=(vals[i]/mx)*cW;
+    var lbl=labels[i];if(lbl.length>19)lbl=lbl.slice(0,18)+'…';
+    addTxt(s,x0-7,y+bHh/2+4,lbl,{'text-anchor':'end','font-size':'10.5',fill:'#1D2D3E'});
+    var col=Array.isArray(colors)?colors[i]:colors;
+    var r=se('rect',{x:x0,y:y,width:bW,height:bHh,fill:col,rx:3});
+    tip(r,labels[i]+': '+fX(vals[i]));r.style.cursor='pointer';s.appendChild(r);
+    addTxt(s,x0+bW+5,y+bHh/2+4,fX(vals[i]),{'font-size':'10',fill:col,'font-weight':'bold'});
+  }
+}
+
+function lineC(id,labels,series,cfg){
+  cfg=cfg||{};
+  var W=500,H=cfg.h||255,x0=58,y0=18,x1=492,y1=H-28,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var all=[],i,j;
+  for(i=0;i<series.length;i++){for(j=0;j<series[i].data.length;j++)all.push(series[i].data[j]);}
+  var mn=cfg.mn!==undefined?cfg.mn:Math.min.apply(null,all)*0.88;
+  var mx=cfg.mx!==undefined?cfg.mx:Math.max.apply(null,all)*1.12;
+  mn=Math.floor(mn);mx=Math.ceil(mx);
+  var fY=cfg.fY||function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);};
+  var n=labels.length;
+  hgrid(s,x0,y0,x1,y1,5);yax(s,x0,y0,y1,mn,mx,5,fY);
+  for(i=0;i<n;i++){addTxt(s,x0+i*cW/(n-1),y1+13,labels[i],{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});}
+  var COLS=['#00338D','#00B8F5','#098E7E'];
+  for(i=0;i<series.length;i++){
+    var d=series[i],col=d.color||COLS[i]||'#666',pts=[];
+    for(j=0;j<d.data.length;j++){pts.push([x0+j*cW/(n-1),y1-(d.data[j]-mn)/(mx-mn)*cH]);}
+    if(d.fill){var ap='M '+pts[0][0]+','+y1;for(j=0;j<pts.length;j++)ap+=' L '+pts[j][0]+','+pts[j][1];ap+=' L '+pts[pts.length-1][0]+','+y1+' Z';s.appendChild(se('path',{d:ap,fill:col,opacity:'0.1',stroke:'none'}));}
+    var lp='M '+pts[0][0]+','+pts[0][1];for(j=1;j<pts.length;j++)lp+=' L '+pts[j][0]+','+pts[j][1];
+    var la={d:lp,stroke:col,'stroke-width':'2.5',fill:'none','stroke-linecap':'round','stroke-linejoin':'round'};
+    if(d.dash)la['stroke-dasharray']='6 4';
+    s.appendChild(se('path',la));
+    for(j=0;j<pts.length;j++){var c=se('circle',{cx:pts[j][0].toFixed(1),cy:pts[j][1].toFixed(1),r:'4',fill:col,stroke:'#fff','stroke-width':'2'});tip(c,labels[j]+': '+fY(d.data[j]));s.appendChild(c);}
+  }
+  if(series.length>1){for(i=0;i<series.length;i++){var col2=series[i].color||COLS[i],lx=x0+i*180;var la2={x1:lx,y1:H-8,x2:lx+16,y2:H-8,stroke:col2,'stroke-width':'2.5'};if(series[i].dash)la2['stroke-dasharray']='5 3';s.appendChild(se('line',la2));s.appendChild(se('circle',{cx:lx+8,cy:H-8,r:'3',fill:col2}));addTxt(s,lx+20,H-4,series[i].label||'',{'font-size':'10',fill:'#666666'});}}
+}
+
+function donutC(id,segs,onClick){
+  var W=400,H=220,s=mkSVG(id,W,H);
+  var cx=108,cy=110,r=82,ri=50,total=0;
+  for(var i=0;i<segs.length;i++)total+=segs[i].v;
+  var ang=-Math.PI/2;
+  for(i=0;i<segs.length;i++){
+    var sg=segs[i],da=(sg.v/total)*2*Math.PI,ea=ang+da;
+    var c0=Math.cos(ang),s0=Math.sin(ang),c1=Math.cos(ea),s1=Math.sin(ea);
+    var x1s=cx+r*c0,y1s=cy+r*s0,x1e=cx+r*c1,y1e=cy+r*s1;
+    var x2s=cx+ri*c1,y2s=cy+ri*s1,x2e=cx+ri*c0,y2e=cy+ri*s0;
+    var lg=da>Math.PI?1:0;
+    var pd='M '+x1s.toFixed(2)+' '+y1s.toFixed(2)+' A '+r+' '+r+' 0 '+lg+' 1 '+x1e.toFixed(2)+' '+y1e.toFixed(2)+' L '+x2s.toFixed(2)+' '+y2s.toFixed(2)+' A '+ri+' '+ri+' 0 '+lg+' 0 '+x2e.toFixed(2)+' '+y2e.toFixed(2)+' Z';
+    var p=se('path',{d:pd,fill:sg.col,stroke:'#fff','stroke-width':'3'});
+    tip(p,sg.nm+': '+sg.v+' items ('+Math.round(sg.v/total*100)+'%)');
+    p.style.cursor='pointer';
+    (function(idx,seg){p.onclick=function(){if(onClick)onClick(idx,seg);};})(i,sg);
+    s.appendChild(p);
+    if(da>0.28){var ma=ang+da/2;var lt=se('text',{x:(cx+(r+ri)/2*Math.cos(ma)).toFixed(2),y:(cy+(r+ri)/2*Math.sin(ma)+4).toFixed(2),'text-anchor':'middle','font-size':'11.5',fill:'#fff','font-weight':'bold'});lt.textContent=Math.round(sg.v/total*100)+'%';s.appendChild(lt);}
+    ang=ea;
+  }
+  var ct=se('text',{x:cx,y:cy-6,'text-anchor':'middle','font-size':'24','font-weight':'bold',fill:'#1D2D3E'});ct.textContent=total;s.appendChild(ct);
+  var cl2=se('text',{x:cx,y:cy+14,'text-anchor':'middle','font-size':'10.5',fill:'#666666'});cl2.textContent='Total Items';s.appendChild(cl2);
+  for(i=0;i<segs.length;i++){var ly=28+i*36;s.appendChild(se('rect',{x:235,y:ly-11,width:13,height:13,fill:segs[i].col,rx:2}));var lt2=se('text',{x:253,y:ly,'font-size':'12',fill:'#1D2D3E','font-weight':'600'});lt2.textContent=segs[i].nm;s.appendChild(lt2);var pv=se('text',{x:390,y:ly,'text-anchor':'end','font-size':'12',fill:segs[i].col,'font-weight':'bold'});pv.textContent=segs[i].v+' items';s.appendChild(pv);}
+}
+
+function varBar(id,labels,vals){
+  var W=500,H=235,x0=50,y0=18,x1=492,y1=H-30,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var am=0;for(var i=0;i<vals.length;i++){var av=Math.abs(vals[i]);if(av>am)am=av;}am*=1.3;
+  var mid=y0+cH/2;
+  var refs=[-am,-am/2,0,am/2,am];
+  for(i=0;i<refs.length;i++){var v=refs[i],y=mid-(v/am)*(cH/2),gy=v===0?'#989898':'#E5E5E5';s.appendChild(se('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:gy,'stroke-width':v===0?'1.5':'1'}));addTxt(s,x0-5,y+4,(v>0?'+':'')+Math.round(v)+'%',{'text-anchor':'end','font-size':'9.5',fill:'#666666'});}
+  var n=labels.length,slot=cW/n,bW=slot*0.7;
+  for(i=0;i<n;i++){
+    var val=vals[i],bH3=Math.abs(val)/am*(cH/2),col=val>15?'#BB0000':val<-10?'#30914C':'#0070F2',by=val>=0?mid-bH3:mid;
+    var r=se('rect',{x:x0+i*slot+slot*0.15,y:by,width:bW,height:bH3,fill:col,rx:2});tip(r,labels[i]+': '+(val>0?'+':'')+val+'%');s.appendChild(r);
+    var lbl=labels[i];if(lbl.length>7)lbl=lbl.slice(0,6)+'…';
+    addTxt(s,x0+i*slot+slot/2,y1+13,lbl,{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});
+    addTxt(s,x0+i*slot+slot/2,val>=0?by-3:by+bH3+10,(val>0?'+':'')+val+'%',{'text-anchor':'middle','font-size':'8.5',fill:col,'font-weight':'bold'});
+  }
+  var lgd=[{col:'#AB0D82',nm:'Spike >+15%'},{col:'#098E7E',nm:'Favorable <-10%'},{col:'#00338D',nm:'Normal'}];
+  for(i=0;i<lgd.length;i++){var lx=x0+i*145;s.appendChild(se('rect',{x:lx,y:H-14,width:10,height:10,fill:lgd[i].col,rx:2}));addTxt(s,lx+13,H-4,lgd[i].nm,{'font-size':'10',fill:'#666666'});}
+}
+
+function bubbleC(id,pts){
+  var W=500,H=265,x0=58,y0=18,x1=490,y1=242,cW=x1-x0,cH=y1-y0;
+  var s=mkSVG(id,W,H);
+  var xs=[],ys=[],i;
+  for(i=0;i<pts.length;i++){xs.push(pts[i].x);ys.push(pts[i].y);}
+  var mnX=Math.min.apply(null,xs)*0.7,mxX=Math.max.apply(null,xs)*1.25,mnY=0,mxY=Math.max.apply(null,ys)*1.22;
+  hgrid(s,x0,y0,x1,y1,5);
+  for(i=0;i<=5;i++){var v=mnY+(mxY-mnY)*i/5,y=y1-(v-mnY)/(mxY-mnY)*cH;addTxt(s,x0-5,y+4,'$'+Math.round(v/1000)+'K',{'text-anchor':'end','font-size':'9.5',fill:'#666666'});var xv=mnX+(mxX-mnX)*i/5,xp=x0+(xv-mnX)/(mxX-mnX)*cW;addTxt(s,xp,y1+13,Math.round(xv)+'d',{'text-anchor':'middle','font-size':'9.5',fill:'#666666'});}
+  var qx=x0+(30-mnX)/(mxX-mnX)*cW,qy=y1-(300000-mnY)/(mxY-mnY)*cH;
+  s.appendChild(se('rect',{x:qx,y:y0,width:x1-qx,height:qy-y0,fill:'rgba(171,13,130,.05)',stroke:'rgba(171,13,130,.2)','stroke-dasharray':'4 3',rx:4}));
+  addTxt(s,x1-4,y0+13,'⚠ High Risk Zone',{'text-anchor':'end','font-size':'9.5',fill:'rgba(171,13,130,.55)'});
+  addTxt(s,(x0+x1)/2,H-3,'Avg Invoice Delay (days)',{'text-anchor':'middle','font-size':'10.5',fill:'#666666'});
+  for(i=0;i<pts.length;i++){
+    var p=pts[i],px=x0+(p.x-mnX)/(mxX-mnX)*cW,py=y1-(p.y-mnY)/(mxY-mnY)*cH;
+    var c=se('circle',{cx:px.toFixed(1),cy:py.toFixed(1),r:p.r||8,fill:p.col||'#0070F2',opacity:'0.82',stroke:'#fff','stroke-width':'1.5'});
+    tip(c,p.nm+'\nDelay: '+p.x+'d | Exp: $'+Math.round(p.y/1000)+'K | Conf: '+p.cf+'%');
+    c.style.cursor='pointer';s.appendChild(c);
+    if((p.r||8)>=10){var lt=se('text',{x:px.toFixed(1),y:(py-p.r-5).toFixed(1),'text-anchor':'middle','font-size':'9',fill:'#666666'});lt.textContent=p.nm.split(' ')[0];s.appendChild(lt);}
+  }
+}
+
+// =====================================================
+// DRAW PAGES
+// =====================================================
+function drawP1(){
+  barH('ch-vend',VD.slice(0,5).map(function(v){return v.nm;}),VD.slice(0,5).map(function(v){return v.ex;}),['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF']);
+  document.getElementById('ch-vend').querySelector('svg').style.cursor='pointer';
+  document.getElementById('ch-vend').onclick=function(e){
+    var r=e.target.closest('rect');if(!r)return;
+    var idx=[].indexOf.call(r.parentNode.querySelectorAll('rect'),r);
+    if(idx<0||idx>=5)return;
+    var v=VD[idx];
+    document.getElementById('dvt').textContent='▶ '+v.nm;
+    document.getElementById('dvc').innerHTML='<div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+fmtK(v.ex)+'</div></div><div><div class="dil">Avg Delay</div><div class="div2">'+v.dy+'d</div></div><div><div class="dil">Confidence</div><div class="div2" style="color:'+cc(v.cf)+'">'+v.cf+'%</div></div>';
+    document.getElementById('dr-vend').classList.add('on');
+  };
+  barV('ch-gl',GL.map(function(g){return g.ac;}),
+    [{data:GL.map(function(g){return g.ex;})}],
+    {fY:function(v){return '$'+Math.round(v/1000)+'K';},h:280,bc:['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF','#63EBDA']}
+  );
+}
+
+function drawP2(){
+  lineC('ch-trend',MO,
+    [{label:'Exposure ($K)',data:TA,color:'#00338D',fill:true},{label:'Item Count',data:TC,color:'#00B8F5',dash:true}],
+    {fY:function(v){return v>=1000?'$'+Math.round(v/1000)+'K':Math.round(v);},h:255}
+  );
+  varBar('ch-var',MO,MM);
+  barV('ch-sea',SM,[{data:SA}],{fY:function(v){return '$'+Math.round(v/1000)+'K';},h:190,bc:SA.map(function(v){return v>=3000?'#AB0D82':v>=2500?'#FD349C':'#00338D';})});
+  lineC('ch-do',MO,[{label:'Avg Days Open',data:DO,color:'#FD349C',fill:true}],{fY:function(v){return Math.round(v)+'d';},h:190});
+}
+
+function drawP3(){
+  bubbleC('ch-bub',VD.map(function(v){return {x:v.dy,y:v.ex,r:Math.max(7,Math.sqrt(v.it)*5.5),col:cc(v.cf),nm:v.nm,cf:v.cf};}));
+  barH('ch-glh',GL.map(function(g){return g.ac+' '+g.nm;}),GL.map(function(g){return g.ex;}),['#00338D','#1E49E2','#00B8F5','#76D2FF','#ACEAFF','#63EBDA']);
+}
+
+function drawP5(){
+  var sigCounts={'GR/IR Gap':0,'GL History':0,'Vendor Delay':0,'Seasonal Spike':0};
+  ML_CANDS.forEach(function(c){c.sigs.forEach(function(s){if(sigCounts[s]!==undefined)sigCounts[s]++;});});
+  barH('ch-sig',Object.keys(sigCounts),Object.values(sigCounts),['#00338D','#098E7E','#AB0D82','#7213EA'],{fX:function(v){return Math.round(v)+' items';},x0:130});
+  var BUCKETS=[0,0,0,0,0];
+  ML_CANDS.forEach(function(c){var i=Math.min(4,Math.floor(c.ps/20));BUCKETS[i]++;});
+  barV('ch-psd',['0–19','20–39','40–59','60–79','80–100'],
+    [{data:BUCKETS}],
+    {fY:function(v){return Math.round(v);},h:220,bc:['#AB0D82','#AB0D82','#FD349C','#FD349C','#098E7E']}
+  );
+}
+
+function drawP6(){
+  barV('ch-pipe',PIPE_MO,
+    [{data:PIPE_REC,color:'#00338D'}],
+    {fY:function(v){return v>=1000?(v/1000).toFixed(1)+'M':v;},h:160}
+  );
+}
+
+// =====================================================
+// TABLES
+// =====================================================
+function renderVT(){
+  document.getElementById('vtb').innerHTML=fVD.map(function(v){
+    return '<tr onclick="drillVT(\''+v.id+'\')" style="cursor:pointer"><td><b>'+v.id+'</b></td><td>'+v.nm+'</td><td><b>'+fmtK(v.ex)+'</b></td><td><span class="dc '+dc(v.dy)+'">'+v.dy+'d</span></td><td>'+v.lr+'%</td><td><div class="cbarw"><div class="cbar"><div class="cbarf" style="width:'+v.cf+'%;background:'+cc(v.cf)+'"></div></div><span class="cbarv" style="color:'+cc(v.cf)+'">'+v.cf+'%</span></div></td><td><span class="badge '+cb(v.cf)+'">'+cl(v.cf)+'</span></td><td style="text-align:center"><b>'+v.it+'</b></td></tr>';
+  }).join('');
+}
+function drillVT(id){
+  var v=null;for(var i=0;i<VD.length;i++){if(VD[i].id===id){v=VD[i];break;}}
+  if(!v)return;
+  document.getElementById('dvtt').textContent='▶ '+v.nm+' ('+v.id+')';
+  document.getElementById('dvtc').innerHTML='<div><div class="dil">Exposure</div><div class="div2" style="color:#00338D">'+fmtK(v.ex)+'</div></div><div><div class="dil">Avg Delay</div><div class="div2">'+v.dy+'d</div></div><div><div class="dil">Late Rate</div><div class="div2">'+v.lr+'%</div></div><div><div class="dil">ML Confidence</div><div class="div2" style="color:'+cc(v.cf)+'">'+v.cf+'%</div></div><div><div class="dil">Open Items</div><div class="div2">'+v.it+'</div></div><div><div class="dil">Action</div><div class="div2" style="font-size:12px;color:#00338D">'+(v.cf>=80?'POST ACCRUAL':'REVIEW ITEMS')+'</div></div>';
+  var invWrap=document.getElementById('inv-tbl-wrap');
+  var invs=INV[v.id];
+  if(invs){
+    document.getElementById('inv-tb').innerHTML=invs.map(function(inv){
+      var stCol=inv.st==='Open'?'#AB0D82':inv.st==='Matched'?'#098E7E':'#F5A623';
+      return '<tr><td><b style="color:#0070F2;font-family:monospace;font-size:11px">'+inv.inv+'</b></td><td style="font-size:11px">'+inv.po+'</td><td style="font-size:11px">'+inv.dt+'</td><td><b style="font-size:12px">'+fmtK(inv.am)+'</b></td><td><span class="dc '+dc(inv.dy)+'">'+inv.dy+'d</span></td><td><b style="color:'+stCol+';font-size:11px">'+inv.st+'</b></td></tr>';
+    }).join('');
+    invWrap.style.display='block';
+  } else {
+    invWrap.style.display='none';
+  }
+  document.getElementById('dr-vt').classList.add('on');
+}
+function filterVT(q){q=q.toLowerCase();fVD=VD.filter(function(v){return v.nm.toLowerCase().indexOf(q)>=0||v.id.toLowerCase().indexOf(q)>=0;});renderVT();}
+function sortVT(col){var keys=['id','nm','ex','dy','lr','cf','','it'];var k=keys[col];if(!k)return;fVD.sort(function(a,b){return typeof a[k]==='number'?b[k]-a[k]:a[k].localeCompare(b[k]);});renderVT();}
+
+function renderML(){
+  document.getElementById('ml-tb').innerHTML=fML.map(function(c){
+    var sigH=c.sigs.map(sigBadge).join('');
+    var acBtn='<span class="badge '+ab(c.ac)+'" style="font-size:11px">'+c.ac+'</span>';
+    return '<tr>'
+      +'<td><b style="color:#0070F2;font-family:monospace;font-size:11px">'+c.id+'</b></td>'
+      +'<td style="font-weight:600">'+c.vn+'</td>'
+      +'<td style="font-size:11px;color:var(--mt)">'+c.gl+'</td>'
+      +'<td>'+sigH+'</td>'
+      +'<td><div class="cbarw"><div class="cbar"><div class="cbarf" style="width:'+c.ps+'%;background:'+cc(c.cf)+'"></div></div><span class="cbarv" style="color:'+cc(c.cf)+'">'+c.ps+'</span></div></td>'
+      +'<td><span style="font-weight:700;color:'+cc(c.cf)+'">'+c.cf+'%</span></td>'
+      +'<td>'+acBtn+'</td>'
+      +'<td><button class="btna" style="background:'+cc(c.cf)+';font-size:11px" onclick="drillML(\''+c.id+'\')">Detail</button></td>'
+    +'</tr>';
+  }).join('');
+}
+function drillML(id){
+  var c=null;for(var i=0;i<ML_CANDS.length;i++){if(ML_CANDS[i].id===id){c=ML_CANDS[i];break;}}
+  if(!c)return;
+  document.getElementById('dr-ml-t').textContent='▶ ML Candidate: '+c.id+' — '+c.vn;
+  document.getElementById('dr-ml-c').innerHTML=
+    '<div class="drg" style="margin-bottom:10px">'
+    +'<div><div class="dil">Pattern Score</div><div class="div2" style="color:'+cc(c.cf)+'">'+c.ps+'/100</div></div>'
+    +'<div><div class="dil">ML Confidence</div><div class="div2" style="color:'+cc(c.cf)+'">'+c.cf+'%</div></div>'
+    +'<div><div class="dil">G/L Account</div><div class="div2">'+c.gl+'</div></div>'
+    +'</div>'
+    +'<div style="margin-bottom:8px"><div class="dil" style="margin-bottom:5px">Signals Fired</div>'
+    +c.sigs.map(function(s){
+      var desc={'GR/IR Gap':'Open GR not matched by corresponding IR — indicates unrecognized obligation','GL History':'Recurring GL posting pattern detected in same period in prior fiscal years','Vendor Delay':'Vendor invoice submission delay exceeds historical baseline by &gt;1σ','Seasonal Spike':'Exposure concentration matches Q1/Q2 boundary seasonal pattern'}[s]||'';
+      return '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px">'+sigBadge(s)+'<span style="font-size:12px;color:var(--mt)">'+desc+'</span></div>';
+    }).join('')
+    +'</div>'
+    +'<div style="font-size:11px;color:#7213EA;font-weight:700">Recommended Action: '+c.ac+'</div>';
+  document.getElementById('dr-ml').classList.add('on');
+}
+function filterML(sig){
+  if(sig==='all'){fML=[].concat(ML_CANDS);}
+  else{fML=ML_CANDS.filter(function(c){return c.sigs.indexOf(sig)>=0;});}
+  renderML();
+}
+function filterMLT(q){
+  q=q.toLowerCase();
+  fML=ML_CANDS.filter(function(c){return c.vn.toLowerCase().indexOf(q)>=0||c.id.toLowerCase().indexOf(q)>=0;});
+  renderML();
+}
+
+function renderWL(){
+  document.getElementById('wlb').innerHTML=fWL.map(function(w){
+    var acBtn='';
+    if(w.ac==='POST')acBtn='<button class="btna" style="background:#00338D;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">POST</button>';
+    else if(w.ac==='REVIEW')acBtn='<button class="btna" style="background:#FD349C;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">REVIEW</button>';
+    else if(w.ac==='MONITOR')acBtn='<button class="btna" style="background:#7213EA;min-width:76px;padding:5px 12px;border-radius:5px" onclick="approve(\''+w.po+'\')">MONITOR</button>';
+    else acBtn='<span style="color:#8A9BB0;font-size:12px;padding:0 8px">—</span>';
+    var dayBg=w.dy>45?'#F5E0F0':w.dy>25?'#FEE8F5':'#E0F5F3',dayCol=w.dy>45?'var(--rd)':w.dy>25?'var(--or)':'var(--gn)';
+    return '<tr><td><b style="color:#0070F2;font-family:monospace;font-size:12px">'+w.po+'</b></td><td style="font-weight:600">'+w.vn+'</td><td style="font-size:11px;color:var(--mt)">'+w.gl+'</td><td><b>'+fmtF(w.am)+'</b></td><td><span style="display:inline-block;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;background:'+dayBg+';color:'+dayCol+'">'+w.dy+'d</span></td><td>'+acBtn+'</td></tr>';
+  }).join('');
+}
+function wlTabClick(q,btn){
+  var cols={all:'#00338D',REVIEW:'#FD349C',MONITOR:'#7213EA','NO ACTION':'#556B82'};
+  document.querySelectorAll('.wltab').forEach(function(b){b.style.borderBottomColor='transparent';b.style.background='#fff';});
+  btn.style.borderBottomColor=cols[q]||'#0070F2';btn.style.background='#F8FAFF';
+  fWL=q==='all'?[].concat(WL):WL.filter(function(w){return w.ac===q;});
+  renderWL();
+  var sel=document.getElementById('wl-act-filter');if(sel)sel.value=q==='all'?'all':q;
+}
+function filterWL(a){fWL=a==='all'?[].concat(WL):WL.filter(function(w){return w.ac===a;});renderWL();}
+function filterWLT(q){q=q.toLowerCase();fWL=WL.filter(function(w){return w.vn.toLowerCase().indexOf(q)>=0||w.po.indexOf(q)>=0||w.gl.toLowerCase().indexOf(q)>=0;});renderWL();}
+function approve(po){
+  var w=null;for(var i=0;i<WL.length;i++){if(WL[i].po===po){w=WL[i];break;}}
+  if(!w)return;
+  alert('✓ Accrual '+po+' submitted for review.\n\nVendor: '+w.vn+'\nAmount: '+fmtF(w.am)+'\nConfidence: '+w.cf+'%');
+}
+
+// =====================================================
+// JOULE SIMULATION
+// =====================================================
+var JOULE_RESPONSES={
+  'top 3 accrual risks':'<strong>Top 3 Accrual Risks — May 2026:</strong><br><br>1. <strong>Accenture LLC</strong> (V001) — $850K exposure, 45-day avg delay, 94% confidence. GR/IR gap + vendor delay signals active.<br><br>2. <strong>Deloitte Services</strong> (V002) — $620K exposure, 32-day avg delay, 79% confidence. Recurring Q1/Q2 boundary pattern.<br><br>3. <strong>IBM Corp</strong> (V003) — $480K exposure, 28-day avg delay. GL history pattern matched across 3 prior periods.<div class="kpi-row"><div class="kpi-pill"><b>$1.95M</b>Combined exposure</div><div class="kpi-pill"><b>83%</b>Avg confidence</div></div>',
+  'vendors with highest exposure':'<strong>Vendors — Unrecognized Accrual Exposure:</strong><br><br>Based on current GR/IR gap analysis and ML scoring:<div class="kpi-row"><div class="kpi-pill"><b>$850K</b>Accenture LLC</div><div class="kpi-pill"><b>$620K</b>Deloitte Svcs</div><div class="kpi-pill"><b>$480K</b>IBM Corp</div><div class="kpi-pill"><b>$320K</b>Microsoft</div><div class="kpi-pill"><b>$280K</b>AWS</div></div><br>Total unrecognized exposure across top 5: <strong>$2.55M</strong>. Navigate to Vendor & GL Intel tab for full drill-down to invoice level.',
+  'confidence above 90%':'<strong>High-Confidence Items (≥90%) — May 2026:</strong><br><br>3 items meet this threshold:<br><br>• <b>AC-2026-001</b> — Accenture LLC / 601000 — Score: 94 — <span style="color:#098E7E">POST</span><br>• <b>AC-2026-002</b> — Cognizant / 601000 — Score: 91 — <span style="color:#098E7E">POST</span><br>• <b>AC-2026-003</b> — SAP SE / 620000 — Score: 87 — <span style="color:#098E7E">POST</span><br><br>Combined exposure: <strong>$455K</strong>. All three are auto-post eligible pending finance approval.',
+  'may 2026 spike':'<strong>May 2026 Seasonal Spike Analysis:</strong><br><br>Exposure is <strong>+23.9%</strong> above April 2026 baseline ($3.10M → $3.84M).<br><br>Root causes identified by ML model:<br>• Q1/Q2 boundary accrual concentration (historical pattern, 4 consecutive years)<br>• 18 new high-confidence GR/IR gaps opened in last 24 hours<br>• Professional Services GL (601000) driving $620K of the increase<br><br>Recommendation: Prioritize Accrual Worklist — 4 items ready for auto-post.',
+  'auto-post eligible':'<strong>Auto-Post Eligible Items — May 2026:</strong><br><br>4 items qualify for automated posting (confidence ≥83%, all signals corroborated):<div class="kpi-row"><div class="kpi-pill"><b>$185K</b>Accenture LLC</div><div class="kpi-pill"><b>$142K</b>Cognizant</div><div class="kpi-pill"><b>$98K</b>SAP SE</div><div class="kpi-pill"><b>$215K</b>Deloitte Svcs</div></div><br>Total auto-post exposure: <strong>$640K</strong>. Navigate to Accrual Worklist to approve and trigger BAPI posting.',
+  'april vs may':'<strong>April vs May 2026 Comparison:</strong><div class="kpi-row"><div class="kpi-pill"><b>$3.10M</b>Apr Exposure</div><div class="kpi-pill"><b>$3.84M</b>May Exposure</div><div class="kpi-pill"><b>+$740K</b>Delta</div><div class="kpi-pill"><b>+23.9%</b>MoM Change</div></div><br>Item count: 85 → 89 (+4 items). High-confidence items: 50 → 47 (model refinement). GR/IR open balance grew by $370K, primarily in Professional Services and IT & Technology accounts.',
+  'gl accounts over budget':'<strong>GL Accounts Over-Accrued vs Budget:</strong><br><br>• <b>601000 Professional Svcs</b> — $1.58M actual vs $1.35M budget — <span style="color:#AB0D82">+$230K (+17%)</span><br>• <b>620000 IT & Technology</b> — $920K actual vs $880K budget — <span style="color:#FD349C">+$40K (+4.5%)</span><br>• <b>640000 Marketing</b> — $380K actual vs $420K budget — <span style="color:#098E7E">-$40K (under)</span><br><br>Total over-accrual risk: <strong>$270K</strong>. Recommend manual review of 601000 before period close.'
+};
+function jouleAsk(question){
+  var msgs=document.getElementById('joule-msgs');
+  var uDiv=document.createElement('div');uDiv.className='msg-u';
+  var uBub=document.createElement('div');uBub.className='msg-bubble-u';uBub.textContent=question;
+  uDiv.appendChild(uBub);msgs.appendChild(uDiv);
+  var key=question.toLowerCase();
+  var resp='I can help with that. Based on current SAP BDC data products (ACDOCA_DP, GRIR_DP, PROCUREMENT_DP) and Databricks ML scoring, here is what I found for your query about "'+question+'". Please navigate to the relevant tab for full interactive detail.';
+  for(var k in JOULE_RESPONSES){if(key.indexOf(k)>=0){resp=JOULE_RESPONSES[k];break;}}
+  setTimeout(function(){
+    var aDiv=document.createElement('div');aDiv.className='msg-a';
+    var av=document.createElement('div');av.className='joule-avatar';av.textContent='J';
+    var aBub=document.createElement('div');aBub.className='msg-bubble-a';aBub.innerHTML=resp;
+    aDiv.appendChild(av);aDiv.appendChild(aBub);msgs.appendChild(aDiv);
+    msgs.scrollTop=msgs.scrollHeight;
+  },600);
+  msgs.scrollTop=msgs.scrollHeight;
+  document.getElementById('joule-inp').value='';
+}
+function jouleSubmit(){
+  var v=document.getElementById('joule-inp').value.trim();
+  if(v)jouleAsk(v);
+}
+
+// =====================================================
+// NAVIGATION
+// =====================================================
+function showP(id,btn){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='p2'&&!window._p2){window._p2=1;drawP2();}
+  if(id==='p3'&&!window._p3){window._p3=1;drawP3();}
+  if(id==='p5'&&!window._p5){window._p5=1;drawP5();}
+  if(id==='p6'&&!window._p6){window._p6=1;drawP6();}
+}
+function cdr(id){document.getElementById(id).classList.remove('on');}
+function applyF(){
+  var c=parseInt(document.getElementById('fK').value);
+  fWL=WL.filter(function(w){return w.cf>=c;});
+  fVD=VD.filter(function(v){return v.cf>=c;});
+  fML=ML_CANDS.filter(function(m){return m.cf>=c;});
+  renderWL();renderVT();renderML();
+}
+function doRefresh(){
+  var b=document.querySelector('.btnr');b.textContent='↻ Loading...';b.disabled=true;
+  setTimeout(function(){b.textContent='↻ Refresh Data';b.disabled=false;},1200);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+window.onload=function(){
+  drawP1();
+  renderVT();
+  renderWL();
+  renderML();
+};
+</script>
+</body>
+</html>
