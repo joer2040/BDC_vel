@@ -1,0 +1,92 @@
+<mxfile host="app.diagrams.net" agent="GitHub Copilot">
+  <diagram id="sap-data-architecture" name="Accrual Matching Join Model">
+    <mxGraphModel dx="1591" dy="835" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;" value="&lt;b&gt;SAP Data Architecture — Accrual Matching Join Model&lt;/b&gt;" vertex="1">
+          <mxGeometry height="40" width="500" x="500" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="journalentryheader" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a5f;fontColor=#ffffff;strokeColor=#0f2744;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_journalentry (HEADER)&lt;/b&gt;&lt;br&gt;[journalentryheader]&lt;hr&gt;LedgerGroup=&#39;0L&#39;&lt;br&gt;AccountingDocumentClass IN (&#39;WE&#39;,&#39;RE&#39;)&lt;hr&gt;&lt;i&gt;PostingDate | CompanyCode | AccountingDocument | FiscalYear&lt;/i&gt;" vertex="1">
+          <mxGeometry height="110" width="600" x="400" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-header-lineitems" edge="1" parent="1" source="journalentryheader" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#555555;fontSize=9;" target="operationalacctgdocitem" value="INNER JOIN ON&lt;br&gt;CompanyCode + AccountingDocument + FiscalYear">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="operationalacctgdocitem" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d6a4f;fontColor=#ffffff;strokeColor=#1b4332;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_operationalacctgdocitem (LINE ITEMS)&lt;/b&gt;&lt;br&gt;[operationalacctgdocitem]&lt;hr&gt;DebitCreditCode | GLAccount | AmountInCompanyCodeCurrency&lt;br&gt;PurchasingDocument | PurchasingDocumentItem | PurchaseOrderQty&lt;br&gt;Supplier" vertex="1">
+          <mxGeometry height="110" width="700" x="350" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-li-supplierinvoice" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#888888;fontSize=9;dashed=1;" target="supplierinvoice" value="LEFT JOIN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-li-purchaseorder" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#888888;fontSize=9;dashed=1;" target="purchaseorder" value="LEFT JOIN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-li-purchaseorderitem" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#888888;fontSize=9;dashed=1;" target="purchaseorderitem" value="LEFT JOIN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="supplierinvoice" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#5a189a;fontColor=#ffffff;strokeColor=#3c096c;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_supplierinvoice&lt;/b&gt;&lt;br&gt;[supplierinvoice]&lt;hr&gt;InvoicingParty ★ (Supplier AUTH)&lt;hr&gt;&lt;i&gt;JOIN ON CompanyCode + AccountingDocument + FiscalYear&lt;/i&gt;" vertex="1">
+          <mxGeometry height="120" width="280" x="100" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="purchaseorder" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#5a189a;fontColor=#ffffff;strokeColor=#3c096c;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_purchaseorder&lt;/b&gt;&lt;br&gt;[purchaseorder]&lt;hr&gt;Supplier (fallback)&lt;br&gt;DocumentCurrency&lt;hr&gt;&lt;i&gt;JOIN ON PurchasingDocument&lt;/i&gt;" vertex="1">
+          <mxGeometry height="120" width="280" x="550" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="purchaseorderitem" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#5a189a;fontColor=#ffffff;strokeColor=#3c096c;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_purchaseorderitem&lt;/b&gt;&lt;br&gt;[purchaseorder]&lt;hr&gt;OrderQuantity ★ | NetAmount&lt;br&gt;PurchaseOrderItemText&lt;hr&gt;&lt;i&gt;JOIN ON PO + POItem&lt;/i&gt;" vertex="1">
+          <mxGeometry height="120" width="280" x="1000" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-li-poacctassign" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#888888;fontSize=9;dashed=1;" target="poacctassignment" value="LEFT JOIN">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="390" />
+              <mxPoint x="240" y="390" />
+              <mxPoint x="240" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-li-companycode" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#888888;fontSize=9;dashed=1;" target="companycode" value="LEFT JOIN">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="390" />
+              <mxPoint x="1140" y="390" />
+              <mxPoint x="1140" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="poacctassignment" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b5651d;fontColor=#ffffff;strokeColor=#8b4513;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_purchaseorderaccountassignment&lt;/b&gt;&lt;br&gt;[purchaseorder]&lt;hr&gt;GLAccount ★ (authoritative)&lt;hr&gt;&lt;i&gt;JOIN ON PO + POItem&lt;/i&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="100" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="companycode" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b5651d;fontColor=#ffffff;strokeColor=#8b4513;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_companycode&lt;/b&gt;&lt;br&gt;[companycode]&lt;hr&gt;Currency (CompanyCodeCurrency)&lt;br&gt;CompanyCodeName&lt;hr&gt;&lt;i&gt;JOIN ON CompanyCode&lt;/i&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="1000" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-li-debitcredit" edge="1" parent="1" source="operationalacctgdocitem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#c62828;fontSize=9;strokeColor=#c62828;" target="debitcreditcode" value="INNER JOIN (validation)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="380" />
+              <mxPoint x="60" y="380" />
+              <mxPoint x="60" y="830" />
+              <mxPoint x="240" y="830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="debitcreditcode" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c62828;fontColor=#ffffff;strokeColor=#8e0000;arcSize=10;align=center;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;raw_debitcreditcode&lt;/b&gt;&lt;br&gt;[journalentryitemcodes]&lt;hr&gt;INNER JOIN = validation&lt;br&gt;DebitCreditCode" vertex="1">
+          <mxGeometry height="100" width="280" x="100" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;arcSize=5;" value="" vertex="1">
+          <mxGeometry height="160" width="350" x="1050" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=13;" value="&lt;b&gt;Legend&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="70" x="1180" y="795" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-star" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;" value="★ = Authoritative source&lt;br&gt;(fb) = Fallback source" vertex="1">
+          <mxGeometry height="40" width="140" x="1065" y="825" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-supplier" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;" value="&lt;b&gt;&lt;font color=&#39;#5a189a&#39;&gt;SUPPLIER ORDER:&lt;/font&gt;&lt;/b&gt;&lt;br&gt;1. supplierinvoice → 2. purchaseorder → 3. acctgdocitem" vertex="1">
+          <mxGeometry height="40" width="310" x="1065" y="865" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-glaccount" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;" value="&lt;b&gt;&lt;font color=&#39;#b5651d&#39;&gt;GL ACCOUNT ORDER:&lt;/font&gt;&lt;/b&gt;&lt;br&gt;1. PO account assignment → 2. acctgdocitem" vertex="1">
+          <mxGeometry height="40" width="260" x="1065" y="905" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
