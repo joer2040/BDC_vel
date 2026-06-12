@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Driven Accrual Matching — Solution Architecture</title>
+<style>
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .wrap { max-width: 100%; }
+}
+* { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+body { background:white; padding:24px 20px; }
+.wrap { max-width:1000px; margin:0 auto; }
+
+.diag-title { font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px; }
+.diag-sub   { font-size:10px; color:#94a3b8; margin-bottom:20px; }
+
+.env {
+  border:1.5px dashed #cbd5e1; border-radius:12px;
+  padding:12px 14px; margin-bottom:0;
+  position:relative;
+}
+.env-label {
+  position:absolute; top:-9px; left:14px;
+  font-size:8.5px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.07em; padding:1px 8px; border-radius:6px;
+  background:white; border:1px solid #e2e8f0; color:#64748b;
+}
+.env.bdc-env  { border-color:#a5b4fc; }
+.env.dbx-env  { border-color:#fcd34d; }
+.env.sac-env  { border-color:#7dd3fc; }
+.env-label.bdc-lbl { color:#4338ca; border-color:#a5b4fc; }
+.env-label.dbx-lbl { color:#92400e; border-color:#fcd34d; }
+.env-label.sac-lbl { color:#0c4a6e; border-color:#7dd3fc; }
+
+.sec-hdr {
+  font-size:9px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.07em; color:#94a3b8; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.sec-hdr span { flex:1; height:1px; background:#f1f5f9; }
+
+.cards { display:flex; gap:8px; flex-wrap:wrap; }
+.card {
+  flex:1; min-width:130px; max-width:200px;
+  border-radius:8px; border:1.5px solid #e2e8f0;
+  overflow:hidden; font-size:9.5px;
+}
+.card-hdr {
+  padding:5px 8px; font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.card-body { padding:4px 8px 6px; }
+.field { padding:1.5px 0; color:#475569; display:flex; gap:4px; align-items:baseline; }
+.field .fname { flex:1; }
+.badge {
+  font-size:7.5px; font-weight:700; padding:1px 4px; border-radius:3px;
+  text-transform:uppercase; white-space:nowrap;
+}
+.pk  { background:#dcfce7; color:#166534; }
+.fk  { background:#dbeafe; color:#1e40af; }
+.key { background:#fef9c3; color:#854d0e; }
+.flag{ background:#fee2e2; color:#991b1b; }
+
+.card-je   { border-color:#a5b4fc; }
+.card-je   .card-hdr { background:#eef2ff; color:#3730a3; }
+.card-po   { border-color:#86efac; }
+.card-po   .card-hdr { background:#f0fdf4; color:#14532d; }
+.card-si   { border-color:#fca5a5; }
+.card-si   .card-hdr { background:#fef2f2; color:#991b1b; }
+.card-cc   { border-color:#fcd34d; }
+.card-cc   .card-hdr { background:#fffbeb; color:#78350f; }
+.card-raw  { border-color:#e2e8f0; }
+.card-raw  .card-hdr { background:#f8fafc; color:#334155; }
+.card-slv  { border-color:#94a3b8; }
+.card-slv  .card-hdr { background:#f1f5f9; color:#1e293b; }
+.card-gld  { border-color:#facc15; }
+.card-gld  .card-hdr { background:#fefce8; color:#713f12; }
+
+.scope {
+  font-size:7.5px; font-weight:700; padding:2px 6px;
+  border-radius:6px; text-transform:uppercase; letter-spacing:0.05em;
+}
+.scope-now  { background:#dcfce7; color:#166534; border:1px solid #86efac; }
+.scope-fut  { background:#ffedd5; color:#9a3412; border:1px solid #fdba74; }
+
+.arrow-row { display:flex; justify-content:center; align-items:center; height:32px; position:relative; }
+.arrow-row svg { width:60px; height:32px; }
+.arrow-lbl {
+  position:absolute; font-size:8.5px; color:#94a3b8;
+  background:white; padding:0 6px; white-space:nowrap;
+}
+
+.sac-mock {
+  background:#0f172a; border-radius:8px; padding:10px 12px;
+  color:white; flex:2; min-width:200px;
+}
+.sac-mock .mtitle { font-size:9px; font-weight:700; color:#7dd3fc; margin-bottom:6px; }
+.kpi-row { display:flex; gap:6px; margin-bottom:6px; }
+.kpi { background:#1e293b; border-radius:5px; padding:4px 7px; flex:1; }
+.kpi .kv { font-size:11px; font-weight:700; color:#f0f9ff; }
+.kpi .kl { font-size:8px; color:#64748b; }
+.kpi.red .kv { color:#f87171; }
+.kpi.grn .kv { color:#4ade80; }
+.kpi.ylw .kv { color:#facc15; }
+.mock-rows { display:flex; flex-direction:column; gap:2px; }
+.mock-row { display:flex; gap:4px; align-items:center; }
+.mock-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.mock-line { flex:1; height:3px; border-radius:2px; background:#1e293b; }
+.mock-val { font-size:8px; color:#94a3b8; width:42px; text-align:right; }
+
+.joule-box {
+  background:linear-gradient(135deg,#1e1b4b,#312e81);
+  border-radius:8px; padding:10px 12px; flex:1; min-width:120px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.joule-icon { font-size:18px; }
+.joule-name { font-size:11px; font-weight:700; color:#e0e7ff; }
+.joule-sub  { font-size:9px; color:#a5b4fc; }
+.joule-chip {
+  background:#312e81; border:1px solid #4338ca;
+  border-radius:4px; padding:2px 6px;
+  font-size:8px; color:#c7d2fe; width:fit-content;
+}
+
+.s4-box {
+  background:#f0fdf4; border:1.5px solid #86efac;
+  border-radius:8px; padding:10px 12px; flex:1; min-width:100px;
+}
+.s4-name { font-size:11px; font-weight:700; color:#14532d; }
+.s4-sub  { font-size:9px; color:#16a34a; margin-top:2px; }
+
+.inline-row { display:flex; gap:10px; align-items:stretch; }
+.gap { height:10px; }
+
+.erd { border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; background:#fff; margin-top:8px; }
+.erd-title { font-size:9px; font-weight:700; color:#64748b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
+.erd-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.erd-entity {
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px;
+  padding:4px 7px; font-size:8.5px;
+}
+.erd-entity .en { font-weight:700; color:#1e293b; }
+.erd-entity .ef { color:#64748b; font-size:8px; }
+.erd-arrow { color:#cbd5e1; font-size:11px; }
+.join-note { font-size:7.5px; color:#94a3b8; background:#f8fafc; border-radius:4px; padding:2px 5px; }
+
+.legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; padding-top:12px; border-top:1px solid #f1f5f9; }
+.leg { display:flex; align-items:center; gap:5px; font-size:9px; color:#64748b; }
+.leg-dot { width:9px; height:9px; border-radius:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="diag-title">AI Driven Accrual Matching — Solution Architecture</div>
+  <div class="diag-sub">Catalog: [pe]_xx102_pe_finance &nbsp;·&nbsp; SAP BDC + Databricks + SAC &nbsp;·&nbsp; Build Phase POC</div>
+
+  <!-- CONSUMERS (TOP) -->
+  <div class="env sac-env">
+    <div class="env-label sac-lbl">SAC + BTP — Consumer Layer</div>
+    <div class="gap"></div>
+    <div class="sec-hdr">Output &amp; Consumption <span></span> <div class="scope scope-now">Current</div> <div class="scope scope-fut">Q3 2026</div></div>
+    <div class="inline-row">
+      <div class="sac-mock">
+        <div class="mtitle">⬛ SAC — Accrual Worklist Dashboard</div>
+        <div class="kpi-row">
+          <div class="kpi red"><div class="kv">$12.75M</div><div class="kl">Total Exposure</div></div>
+          <div class="kpi ylw"><div class="kv">87</div><div class="kl">Open Items</div></div>
+          <div class="kpi"><div class="kv">56</div><div class="kl">POST Actions</div></div>
+          <div class="kpi grn"><div class="kv">31</div><div class="kl">REVIEW</div></div>
+        </div>
+        <div class="mock-rows">
+          <div class="mock-row"><div class="mock-dot" style="background:#f87171"></div><div class="mock-line" style="width:60%"></div><div class="mock-val">$498K POST</div></div>
+          <div class="mock-row"><div class="mock-dot" style="background:#f87171"></div><div class="mock-line" style="width:50%"></div><div class="mock-val">$441K POST</div></div>
+          <div class="mock-row"><div class="mock-dot" style="background:#facc15"></div><div class="mock-line" style="width:35%"></div><div class="mock-val">$312K REVIEW</div></div>
+          <div class="mock-row"><div class="mock-dot" style="background:#94a3b8"></div><div class="mock-line" style="width:25%"></div><div class="mock-val">$178K OBS</div></div>
+        </div>
+      </div>
+      <div class="joule-box">
+        <div class="joule-icon">✦</div>
+        <div class="joule-name">Joule / Just Ask</div>
+        <div class="joule-sub">Conversational AI on BTP</div>
+        <div class="joule-chip">Q3 2026 (TBD)</div>
+        <div class="joule-chip" style="margin-top:2px">NL → Accrual Query</div>
+        <div class="scope scope-fut" style="margin-top:4px">Future Scope</div>
+      </div>
+      <div class="s4-box">
+        <div class="s4-name">S/4 Postback</div>
+        <div class="s4-sub">BAPI / RFC</div>
+        <div style="margin-top:8px;font-size:8.5px;color:#166534;">Auto-post accrual<br>entries to FI-GL</div>
+        <div class="scope scope-fut" style="margin-top:8px">Future Scope</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <svg viewBox="0 0 60 32"><polygon points="30,2 24,12 36,12" fill="#cbd5e1"/><line x1="30" y1="12" x2="30" y2="32" stroke="#cbd5e1" stroke-width="1.5"/></svg>
+    <div class="arrow-lbl">Delta Sharing / CSV Live feed</div>
+  </div>
+
+  <!-- GOLD -->
+  <div class="env dbx-env">
+    <div class="env-label dbx-lbl">Databricks — Gold Layer</div>
+    <div class="gap"></div>
+    <div class="sec-hdr">fact_accrual_worklist <span></span> <div class="scope scope-now">Current</div></div>
+    <div class="cards">
+      <div class="card card-gld" style="max-width:100%">
+        <div class="card-hdr">fact_accrual_worklist &nbsp;<span style="font-size:8px;font-weight:400;color:#a16207">87 rows · 15 cols · Delta Table + CSV export to UC Volume</span></div>
+        <div class="card-body" style="display:flex;flex-wrap:wrap;gap:0 20px;">
+          <div class="field"><span class="fname">CompanyCode / CompanyCodeName</span><span class="badge key">dim</span></div>
+          <div class="field"><span class="fname">PurchaseOrder</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">Supplier</span><span class="badge key">★</span></div>
+          <div class="field"><span class="fname">GLAccount</span><span class="badge key">★</span></div>
+          <div class="field"><span class="fname">Exposure_Amount / Exposure_Amount_USD</span><span class="badge key">metric</span></div>
+          <div class="field"><span class="fname">Oldest_GR_Date · Days_Open</span><span class="badge key">metric</span></div>
+          <div class="field"><span class="fname">Fiscal_Year · Fiscal_Period</span><span class="badge key">dim</span></div>
+          <div class="field"><span class="fname">Worklist_Category</span><span class="badge key">class</span></div>
+          <div class="field"><span class="fname">Recommended_Action</span><span class="badge key">POST / REVIEW / OBSERVE</span></div>
+          <div class="field"><span class="fname">RCA</span><span class="badge key">narrative</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <svg viewBox="0 0 60 32"><polygon points="30,2 24,12 36,12" fill="#cbd5e1"/><line x1="30" y1="12" x2="30" y2="32" stroke="#cbd5e1" stroke-width="1.5"/></svg>
+    <div class="arrow-lbl">Select 15 cols · orderBy Exposure desc</div>
+  </div>
+
+  <!-- SILVER -->
+  <div class="env dbx-env">
+    <div class="env-label dbx-lbl">Databricks — Silver Layer</div>
+    <div class="gap"></div>
+    <div class="sec-hdr">accrual_worklist — GR/IR Intelligence <span></span> <div class="scope scope-now">Current</div></div>
+    <div class="cards">
+      <div class="card card-slv">
+        <div class="card-hdr">GR/IR Exposure Engine</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">Filter: LedgerGroup = '0L'</span></div>
+          <div class="field"><span class="fname">WE docs → Signed_GR_Amount</span><span class="badge pk">GR</span></div>
+          <div class="field"><span class="fname">RE docs → Signed_IR_Amount</span><span class="badge fk">IR</span></div>
+          <div class="field"><span class="fname">Exposure = GR − IR (where &gt; 0)</span><span class="badge key">★</span></div>
+          <div class="field"><span class="fname">Days_Open = today − MIN(GR date)</span></div>
+          <div class="field"><span class="fname">FX → Exposure_USD (10 currencies)</span></div>
+        </div>
+      </div>
+      <div class="card card-slv">
+        <div class="card-hdr">Variance Classifier (V2)</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">Invoice Missing</span><span class="badge flag">IR=0</span></div>
+          <div class="field"><span class="fname">Cross-Period GR-IR</span><span class="badge key">78 items</span></div>
+          <div class="field"><span class="fname">Quantity Variance</span><span class="badge key">GR qty≠IR qty</span></div>
+          <div class="field"><span class="fname">Price Variance</span><span class="badge key">9 items</span></div>
+          <div class="field"><span class="fname">Over-Billing (IR&gt;GR qty)</span></div>
+          <div class="field"><span class="fname">Matched – Unpaid</span></div>
+        </div>
+      </div>
+      <div class="card card-slv">
+        <div class="card-hdr">Action + RCA Engine</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">POST: exp&gt;$50K AND days&gt;30</span><span class="badge flag">56 items</span></div>
+          <div class="field"><span class="fname">REVIEW: exp&gt;$20K OR days&gt;45</span><span class="badge key">31 items</span></div>
+          <div class="field"><span class="fname">OBSERVE: $5K–$50K, 15–30d</span></div>
+          <div class="field"><span class="fname">NO ACTION: low risk</span></div>
+          <div class="field"><span class="fname">RCA: auto narrative per category</span><span class="badge key">text</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="erd">
+      <div class="erd-title">Entity Relationships — Multi-Data-Product Join</div>
+      <div class="erd-row">
+        <div class="erd-entity">
+          <div class="en">raw_journalentry</div>
+          <div class="ef">CompanyCode · AccountingDocument · FiscalYear (PK)<br>AccountingDocumentClass (WE/RE) · LedgerGroup (0L)<br>PostingDate · FiscalPeriod</div>
+        </div>
+        <div class="erd-arrow">⟶</div>
+        <div class="join-note">INNER JOIN<br>CC + AccDoc + FY</div>
+        <div class="erd-arrow">⟶</div>
+        <div class="erd-entity">
+          <div class="en">raw_operationalacctgdocitem</div>
+          <div class="ef">+ AccountingDocumentItem (PK)<br>DebitCreditCode (S/H) · GLAccount<br>AmountInCompanyCodeCurrency<br>PurchasingDocument → FK PO<br>PurchasingDocumentItem → FK POItem</div>
+        </div>
+        <div class="erd-arrow">⟶</div>
+        <div class="join-note">LEFT JOIN<br>PO + POItem</div>
+        <div class="erd-arrow">⟶</div>
+        <div class="erd-entity">
+          <div class="en">raw_purchaseorder / item / acctassign</div>
+          <div class="ef">PurchaseOrder (PK) · Supplier★<br>OrderQuantity★ · NetPriceAmount<br>GLAccount★ (authoritative, acct assign)<br>IsCompletelyDelivered · IsFinallyInvoiced</div>
+        </div>
+        <div class="erd-arrow">⟶</div>
+        <div class="join-note">LEFT JOIN<br>SI item→header</div>
+        <div class="erd-arrow">⟶</div>
+        <div class="erd-entity">
+          <div class="en">raw_supplierinvoice(item)</div>
+          <div class="ef">SupplierInvoice · FiscalYear (PK)<br>InvoicingParty★ (Supplier, authoritative)<br>PurchaseOrder / Item → FK</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <svg viewBox="0 0 60 32"><polygon points="30,2 24,12 36,12" fill="#cbd5e1"/><line x1="30" y1="12" x2="30" y2="32" stroke="#cbd5e1" stroke-width="1.5"/></svg>
+    <div class="arrow-lbl">pandas read_csv → spark.createDataFrame → sanitize cols → Delta write</div>
+  </div>
+
+  <!-- BRONZE -->
+  <div class="env dbx-env">
+    <div class="env-label dbx-lbl">Databricks — Bronze Layer &nbsp;·&nbsp; raw_* Delta Tables</div>
+    <div class="gap"></div>
+    <div class="sec-hdr">Raw Ingestion — 40 tables · 17,807 rows total <span></span> <div class="scope scope-now">Current</div></div>
+    <div class="cards">
+      <div class="card card-raw">
+        <div class="card-hdr">raw_journalentry</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">1,648 rows · 110 cols</span></div>
+          <div class="field"><span class="fname">AccountingDocumentClass</span><span class="badge key">WE/RE</span></div>
+          <div class="field"><span class="fname">LedgerGroup</span><span class="badge key">0L</span></div>
+          <div class="field"><span class="fname">PostingDate · FiscalPeriod</span></div>
+        </div>
+      </div>
+      <div class="card card-raw">
+        <div class="card-hdr">raw_operationalacctgdocitem</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">Amounts · GL · PO refs</span></div>
+          <div class="field"><span class="fname">DebitCreditCode (S/H)</span><span class="badge key">sign</span></div>
+          <div class="field"><span class="fname">PurchasingDocument</span><span class="badge fk">→ PO</span></div>
+        </div>
+      </div>
+      <div class="card card-raw">
+        <div class="card-hdr">raw_purchaseorder*</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">raw_purchaseorder: 144r · 61c</span></div>
+          <div class="field"><span class="fname">raw_purchaseorderitem: 165r · 75c</span></div>
+          <div class="field"><span class="fname">raw_purchaseorderaccountassignment: 7r</span></div>
+          <div class="field"><span class="fname">raw_purchaseorderscheduleline: 178r</span></div>
+        </div>
+      </div>
+      <div class="card card-raw">
+        <div class="card-hdr">raw_supplierinvoice*</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">raw_supplierinvoice: 67r · 23c</span></div>
+          <div class="field"><span class="fname">raw_supplierinvoiceitem: 54r · 42c</span></div>
+          <div class="field"><span class="fname">InvoicingParty</span><span class="badge key">★ Supplier</span></div>
+        </div>
+      </div>
+      <div class="card card-raw">
+        <div class="card-hdr">raw_companycode + refs</div>
+        <div class="card-body">
+          <div class="field"><span class="fname">raw_companycode: 49r · 26c</span></div>
+          <div class="field"><span class="fname">DE 1010 · CH 2210 · AU 3010</span></div>
+          <div class="field"><span class="fname">HR 4010 · EE 5010</span></div>
+          <div class="field"><span class="fname">raw_debitcreditcode (validation)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <svg viewBox="0 0 60 32"><polygon points="30,2 24,12 36,12" fill="#cbd5e1"/><line x1="30" y1="12" x2="30" y2="32" stroke="#cbd5e1" stroke-width="1.5"/></svg>
+    <div class="arrow-lbl">CSV export → UC Volume · BDC Connect</div>
+  </div>
+
+  <!-- BDC DATA PRODUCTS (BOTTOM) -->
+  <div class="env bdc-env">
+    <div class="env-label bdc-lbl">SAP Business Data Cloud — SAP-Managed Data Products</div>
+    <div class="gap"></div>
+    <div class="sec-hdr">Source Data Products — CDS Views on S/4HANA <span></span> <div class="scope scope-now">Current</div></div>
+    <div class="cards">
+      <div class="card card-je">
+        <div class="card-hdr">Journal Entry DP <span class="scope scope-now" style="font-size:7px">Active</span></div>
+        <div class="card-body">
+          <div class="field"><span class="fname">CompanyCode</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">AccountingDocument</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">FiscalYear</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">AccountingDocumentClass</span><span class="badge key">WE/RE</span></div>
+          <div class="field"><span class="fname">LedgerGroup</span><span class="badge key">0L</span></div>
+          <div class="field"><span class="fname">PostingDate · FiscalPeriod</span></div>
+          <div class="field"><span class="fname">operationalacctgdocitem</span><span class="badge fk">child</span></div>
+        </div>
+      </div>
+      <div class="card card-po">
+        <div class="card-hdr">Purchase Order DP <span class="scope scope-now" style="font-size:7px">Active</span></div>
+        <div class="card-body">
+          <div class="field"><span class="fname">PurchaseOrder</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">Supplier · CompanyCode</span></div>
+          <div class="field"><span class="fname">DocumentCurrency · PO Date</span></div>
+          <div class="field"><span class="fname">PurchaseOrderItem</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">OrderQuantity · NetPriceAmount</span><span class="badge key">★</span></div>
+          <div class="field"><span class="fname">IsCompletelyDelivered</span><span class="badge flag">excl</span></div>
+          <div class="field"><span class="fname">IsFinallyInvoiced</span><span class="badge flag">excl</span></div>
+          <div class="field"><span class="fname">AccountAssign → GLAccount</span><span class="badge key">★ auth</span></div>
+        </div>
+      </div>
+      <div class="card card-si">
+        <div class="card-hdr">Supplier Invoice DP <span class="scope scope-now" style="font-size:7px">Active</span></div>
+        <div class="card-body">
+          <div class="field"><span class="fname">SupplierInvoice</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">FiscalYear</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">InvoicingParty</span><span class="badge key">★ Supplier</span></div>
+          <div class="field"><span class="fname">CompanyCode · DocumentCurrency</span></div>
+          <div class="field"><span class="fname">PostingDate</span></div>
+          <div class="field"><span class="fname">SupplierInvoiceItem</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">PurchaseOrder</span><span class="badge fk">→ PO DP</span></div>
+          <div class="field"><span class="fname">PurchaseOrderItem</span><span class="badge fk">→ PO DP</span></div>
+        </div>
+      </div>
+      <div class="card card-cc">
+        <div class="card-hdr">Company Code DP <span class="scope scope-now" style="font-size:7px">Active</span></div>
+        <div class="card-body">
+          <div class="field"><span class="fname">CompanyCode</span><span class="badge pk">PK</span></div>
+          <div class="field"><span class="fname">Currency</span><span class="badge key">★ FX base</span></div>
+          <div class="field"><span class="fname">CompanyCodeName</span></div>
+          <div class="field"><span class="fname">DE 1010 · CH 2210</span></div>
+          <div class="field"><span class="fname">AU 3010 · HR 4010 · EE 5010</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#a5b4fc"></div>SAP BDC / Data Products</div>
+    <div class="leg"><div class="leg-dot" style="background:#fde68a"></div>Databricks (Bronze / Silver / Gold)</div>
+    <div class="leg"><div class="leg-dot" style="background:#7dd3fc"></div>Consumer (SAC / BTP)</div>
+    <div class="leg"><div class="leg-dot" style="background:#dcfce7"></div>PK — Primary Key</div>
+    <div class="leg"><div class="leg-dot" style="background:#dbeafe"></div>FK — Foreign Key</div>
+    <div class="leg"><div class="leg-dot" style="background:#fef9c3"></div>★ — Authoritative source</div>
+    <div class="leg"><div class="leg-dot" style="background:#fee2e2"></div>Exclusion / Block flag</div>
+    <div class="leg"><div class="leg-dot" style="background:#dcfce7;border:1px solid #86efac"></div>Current Scope</div>
+    <div class="leg"><div class="leg-dot" style="background:#ffedd5;border:1px solid #fdba74"></div>Future Scope</div>
+  </div>
+
+</div>
+</body>
+</html>
