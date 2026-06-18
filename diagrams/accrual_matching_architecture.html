@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #fff; padding: 20px; }
+  h2.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  .diagram { width: 100%; max-width: 960px; margin: 0 auto; }
+
+  /* Title */
+  .title-block { margin-bottom: 18px; }
+  .title-block h1 { font-size: 22px; font-weight: 700; color: #00338D; line-height: 1.2; }
+  .title-block p  { font-size: 13px; color: #444; margin-top: 4px; font-style: italic; }
+
+  /* Outcomes row */
+  .outcomes-row { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; }
+  .outcomes-label { font-size: 11px; font-weight: 700; color: #00338D; width: 90px; flex-shrink: 0; line-height: 1.3; }
+  .outcome-chip {
+    background: #00338D; color: #fff; font-size: 11px; font-weight: 600;
+    padding: 5px 10px; border-radius: 3px; white-space: nowrap;
+  }
+
+  /* Layer grid */
+  .layer {
+    display: flex; align-items: stretch; margin-bottom: 6px; gap: 0;
+  }
+  .layer-label {
+    width: 90px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: #00338D;
+    text-align: right; padding-right: 10px; padding-top: 8px; line-height: 1.35;
+  }
+
+  /* APPLICATIONS layer */
+  .app-box {
+    flex: 1; border: 2px solid #00338D; border-radius: 4px;
+    display: flex; align-items: center; gap: 0; overflow: hidden;
+  }
+  .app-icon { background: #00338D; width: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; align-self: stretch; }
+  .app-icon svg { width: 18px; height: 18px; }
+  .app-cells { display: flex; flex: 1; }
+  .app-cell {
+    flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: #00338D;
+    padding: 8px 6px; border-left: 1px solid #cce0f5;
+  }
+
+  /* CONTEXT layer */
+  .context-row {
+    display: flex; margin-bottom: 6px;
+  }
+  .context-spacer { width: 90px; flex-shrink: 0; }
+  .context-box {
+    flex: 1; text-align: center; font-size: 11px; color: #555;
+    background: #f0f5fc; border: 1px solid #c0d4ef; border-radius: 3px;
+    padding: 5px 10px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .context-box span { color: #00338D; font-weight: 600; }
+  .context-sep { color: #aaa; font-size: 13px; }
+
+  /* SAC LAYER */
+  .sac-box {
+    flex: 1; border: 2px solid #00338D; border-radius: 4px; overflow: hidden;
+  }
+  .sac-icon-col { background: #00338D; width: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; align-self: stretch; }
+  .sac-inner { display: flex; flex: 1; }
+  .sac-col {
+    flex: 1; border-left: 1px solid #cce0f5; padding: 7px 8px; min-width: 0;
+  }
+  .sac-col:first-child { border-left: none; }
+  .col-title { font-size: 11px; font-weight: 700; color: #00338D; margin-bottom: 4px; }
+  .col-item { font-size: 10px; color: #333; line-height: 1.5; }
+  .col-item::before { content: "• "; color: #00338D; }
+  .badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 1px 5px; border-radius: 2px; margin-right: 3px; margin-bottom: 2px;
+  }
+  .badge-post   { background: #d32f2f; color: #fff; }
+  .badge-review { background: #f57c00; color: #fff; }
+  .badge-obs    { background: #0288d1; color: #fff; }
+
+  /* BDC ENGINE LAYER */
+  .bdc-box {
+    flex: 1; border: 2px solid #1E49E2; border-radius: 4px; overflow: hidden;
+  }
+  .bdc-inner { display: flex; flex: 1; }
+  .bdc-icon-col { background: #1E49E2; width: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; align-self: stretch; }
+  .bdc-col { flex: 1; border-left: 1px solid #ccd4f5; padding: 7px 8px; min-width: 0; }
+  .bdc-col:first-child { border-left: none; }
+  .bdc-col-title { font-size: 11px; font-weight: 700; color: #1E49E2; margin-bottom: 4px; }
+  .bdc-item { font-size: 10px; color: #333; line-height: 1.5; }
+  .bdc-item::before { content: "• "; color: #1E49E2; }
+  .medal-row { display: flex; gap: 3px; margin-top: 4px; }
+  .medal { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 2px; }
+  .medal-b { background: #CD7F32; color: #fff; }
+  .medal-s { background: #888; color: #fff; }
+  .medal-g { background: #B8860B; color: #fff; }
+  .arrow-right { color: #888; font-size: 10px; align-self: center; }
+  .batch-note { font-size: 9px; color: #666; text-align: center; padding: 3px; background: #f5f7ff; border-top: 1px solid #ccd4f5; }
+
+  /* SOURCES LAYER */
+  .sources-box { flex: 1; display: flex; gap: 6px; }
+  .src-card {
+    flex: 1; border: 2px dashed #00338D; border-radius: 4px;
+    padding: 7px 6px; text-align: center;
+  }
+  .src-card.future { border-color: #aaa; }
+  .src-title { font-size: 11px; font-weight: 700; color: #00338D; margin-bottom: 3px; }
+  .src-title.future-title { color: #888; }
+  .src-sub { font-size: 9.5px; color: #555; line-height: 1.4; }
+
+  /* UP ARROW connector */
+  .connector-row { display: flex; margin-bottom: 2px; }
+  .connector-spacer { width: 90px; flex-shrink: 0; }
+  .connector-inner { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .up-arrow { font-size: 16px; color: #00338D; line-height: 1; }
+  .fragmented-note { font-size: 10px; color: #888; font-style: italic; margin-left: 8px; }
+
+  /* Icon SVGs */
+  .icon-white { fill: none; stroke: #fff; stroke-width: 1.5; }
+</style>
+</head>
+<body>
+<h2 class="sr-only">AI Driven Accrual Matching architecture diagram — from data sources at the bottom to strategic outcomes at the top</h2>
+
+<div class="diagram">
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <h1>AI Driven Accrual Matching: From Data to Actions</h1>
+    <p>Identify exposure. Classify accruals. Accelerate close.</p>
+  </div>
+
+  <!-- STRATEGIC OUTCOMES -->
+  <div class="outcomes-row">
+    <div class="outcomes-label">Strategic<br>Outcomes</div>
+    <div class="outcome-chip">Close Accuracy</div>
+    <div class="outcome-chip">Risk Reduction</div>
+    <div class="outcome-chip">Automation</div>
+    <div class="outcome-chip">Efficiency</div>
+    <div class="outcome-chip">Audit Readiness</div>
+  </div>
+
+  <!-- APPLICATIONS & CONSUMERS -->
+  <div class="layer">
+    <div class="layer-label">Applications &amp;<br>Consumers</div>
+    <div class="app-box">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" class="icon-white"/>
+          <line x1="3" y1="9" x2="21" y2="9" class="icon-white"/>
+          <line x1="9" y1="9" x2="9" y2="21" class="icon-white"/>
+        </svg>
+      </div>
+      <div class="app-cells">
+        <div class="app-cell">Accounting Manager<br>Accrual Worklist</div>
+        <div class="app-cell">Financial Controller<br>Exposure Dashboard</div>
+        <div class="app-cell">CFO Executive<br>Finance View</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT LAYER -->
+  <div class="context-row">
+    <div class="context-spacer"></div>
+    <div class="context-box">
+      Context Layer:&nbsp;<span>Business Semantics</span>
+      <span class="context-sep">+</span>
+      <span>Joule NLP (Just Ask)</span>
+      <span class="context-sep">+</span>
+      <span>Smart Insights</span>
+    </div>
+  </div>
+
+  <!-- SAC LAYER -->
+  <div class="layer">
+    <div class="layer-label">SAP Analytics<br>Cloud<br>(Business<br>Semantics)</div>
+    <div class="sac-box">
+      <div class="sac-inner" style="display:flex; align-items:stretch;">
+        <div class="sac-icon-col">
+          <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="9" class="icon-white"/>
+            <polyline points="8,12 11,15 16,9" class="icon-white"/>
+          </svg>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column;">
+          <div style="display:flex; flex:1;">
+            <div class="sac-col">
+              <div class="col-title">KPIs</div>
+              <div class="col-item">Total Exposure $12.75M</div>
+              <div class="col-item">87 Open Items</div>
+              <div class="col-item">5 Company Codes</div>
+            </div>
+            <div class="sac-col">
+              <div class="col-title">Accrual Worklist</div>
+              <div class="col-item">Missing Invoice</div>
+              <div class="col-item">Cross-Period GR/IR</div>
+              <div class="col-item">Quantity Variance</div>
+              <div class="col-item">Price Variance</div>
+            </div>
+            <div class="sac-col">
+              <div class="col-title">Action Rules</div>
+              <div style="margin-top:3px;">
+                <span class="badge badge-post">POST</span>
+                <div class="col-item" style="font-size:9px; margin-bottom:3px;">&gt;$50K &amp; &gt;30 days</div>
+                <span class="badge badge-review">REVIEW</span>
+                <div class="col-item" style="font-size:9px; margin-bottom:3px;">&gt;$20K or &gt;45 days</div>
+                <span class="badge badge-obs">OBSERVE</span>
+                <div class="col-item" style="font-size:9px;">$5K–$50K, 15–30 days</div>
+              </div>
+            </div>
+            <div class="sac-col">
+              <div class="col-title">Self-Service AI</div>
+              <div class="col-item">Smart Insights</div>
+              <div class="col-item">"Just Ask" (Joule)</div>
+              <div class="col-item">RCA Narratives</div>
+              <div class="col-item">Drill-down to PO level</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector-row">
+    <div class="connector-spacer"></div>
+    <div class="connector-inner">
+      <div class="up-arrow">↑</div>
+      <div class="fragmented-note">Batch + Selective Real-time</div>
+    </div>
+  </div>
+
+  <!-- BDC ENGINE LAYER -->
+  <div class="layer">
+    <div class="layer-label">SAP Business<br>Data Cloud<br>(The Engine)</div>
+    <div class="bdc-box">
+      <div style="display:flex; flex-direction:column; flex:1;">
+        <div style="display:flex; align-items:stretch; flex:1;">
+          <div class="bdc-icon-col">
+            <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="12" cy="7" rx="9" ry="3.5" class="icon-white"/>
+              <path d="M3 7 Q3 12 12 12 Q21 12 21 7" class="icon-white" fill="none"/>
+              <path d="M3 12 Q3 17 12 17 Q21 17 21 12" class="icon-white" fill="none"/>
+            </svg>
+          </div>
+          <div class="bdc-col">
+            <div class="bdc-col-title">Standard Data Products</div>
+            <div class="bdc-item">Journal Entry</div>
+            <div class="bdc-item">Purchase Order / Item</div>
+            <div class="bdc-item">Supplier Invoice</div>
+            <div class="bdc-item">Company Code</div>
+          </div>
+          <div class="bdc-col">
+            <div class="bdc-col-title">Medallion Processing</div>
+            <div class="medal-row">
+              <span class="medal medal-b">Bronze</span>
+              <span class="arrow-right">→</span>
+              <span class="medal medal-s">Silver</span>
+              <span class="arrow-right">→</span>
+              <span class="medal medal-g">Gold</span>
+            </div>
+            <div class="bdc-item" style="margin-top:5px;">Delta Sharing (zero-copy)</div>
+            <div class="bdc-item">Unity Catalog (Databricks)</div>
+          </div>
+          <div class="bdc-col">
+            <div class="bdc-col-title">Clean Core Engine</div>
+            <div class="bdc-item">GR/IR Gap Detection</div>
+            <div class="bdc-item">Rule-Based Classifier</div>
+            <div class="bdc-item">Exposure Calculation</div>
+            <div class="bdc-item">RCA Auto-Generation</div>
+          </div>
+        </div>
+        <div class="batch-note">WE (Goods Receipt) vs RE (Invoice Receipt) — LedgerGroup 0L — 5 Company Codes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector-row">
+    <div class="connector-spacer"></div>
+    <div class="connector-inner">
+      <div class="up-arrow">↑</div>
+      <div class="fragmented-note">Fragmented Reality → unified by BDC</div>
+    </div>
+  </div>
+
+  <!-- SOURCES -->
+  <div class="layer">
+    <div class="layer-label">Business Data<br>Fabric (Sources)</div>
+    <div class="sources-box">
+      <div class="src-card">
+        <div class="src-title">SAP S/4HANA</div>
+        <div class="src-sub">DE 1010 · CH 2210<br>AU 3010 · HR 4010 · EE 5010</div>
+      </div>
+      <div class="src-card">
+        <div class="src-title">ECC / BW</div>
+        <div class="src-sub">Legacy GL &amp; PO<br>historical data</div>
+      </div>
+      <div class="src-card">
+        <div class="src-title">RISE / BW4</div>
+        <div class="src-sub">Cloud migration<br>in-flight data</div>
+      </div>
+      <div class="src-card future">
+        <div class="src-title future-title">External Data</div>
+        <div class="src-sub" style="color:#888;">Commodity prices<br>Vendor risk signals</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
