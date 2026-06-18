@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #fff; padding: 20px 24px; }
+  h2.sr-only { position: absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  /* Header */
+  .hdr h1 { font-size: 20px; font-weight: 700; color: #00338D; }
+  .hdr p  { font-size: 12px; color: #555; margin-top: 3px; }
+
+  /* Timeline spine */
+  .timeline { position: relative; margin-top: 24px; }
+  .spine {
+    position: absolute; top: 32px; left: 32px; right: 32px;
+    height: 3px; background: #00338D; z-index: 0;
+  }
+
+  /* Phase row */
+  .phases { display: flex; gap: 10px; position: relative; z-index: 1; }
+
+  .phase { flex: 1; display: flex; flex-direction: column; align-items: center; }
+
+  /* Number bubble */
+  .bubble {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #00338D; color: #fff;
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-bottom: 10px;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #00338D;
+  }
+  .bubble.accent { background: #1E49E2; box-shadow: 0 0 0 2px #1E49E2; }
+
+  /* Card */
+  .card {
+    background: #f4f7fd; border: 1.5px solid #c8d8f0;
+    border-radius: 5px; padding: 10px 10px 12px;
+    width: 100%; text-align: left;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700; color: #00338D;
+    margin-bottom: 6px; line-height: 1.3;
+  }
+  .card-body { font-size: 10px; color: #333; line-height: 1.55; }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 7px; }
+  .tag {
+    font-size: 9px; font-weight: 600; padding: 2px 6px;
+    border-radius: 2px; background: #00338D; color: #fff;
+  }
+  .tag.light { background: #dde8f8; color: #00338D; }
+  .tag.future { background: #e8f4e8; color: #2e7d32; }
+
+  /* Phase label below */
+  .phase-label {
+    font-size: 9px; color: #888; margin-top: 6px; text-align: center; font-style: italic;
+  }
+</style>
+</head>
+<body>
+<h2 class="sr-only">AI Driven Accrual Matching deployment approach — 6 phases from foundation to future enhancements</h2>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <h1>AI Driven Accrual Matching — Deployment Approach</h1>
+    <p>Six-phase structured delivery from data foundation to go-to-market</p>
+  </div>
+
+  <div class="timeline">
+    <div class="spine"></div>
+    <div class="phases">
+
+      <!-- Phase 1 -->
+      <div class="phase">
+        <div class="bubble">1</div>
+        <div class="card">
+          <div class="card-title">Foundation &amp; MVP Development</div>
+          <div class="card-body">Connect S/4HANA Data Products to SAP Datasphere. Build Bronze ingestion layer across Journal Entry, Purchase Order, Supplier Invoice, and Company Code. Deliver a single-page SAC story with basic GR/IR exposure summary to validate the core data pipeline.</div>
+          <div class="tags">
+            <span class="tag">Datasphere</span>
+            <span class="tag light">Bronze Layer</span>
+            <span class="tag light">SAC MVP</span>
+          </div>
+        </div>
+        <div class="phase-label">Hack Phase</div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase">
+        <div class="bubble">2</div>
+        <div class="card">
+          <div class="card-title">Build Classification Engine</div>
+          <div class="card-body">Develop Silver layer GR/IR gap logic in SAP Databricks: exposure calculation (signed GR − IR), first-match classifier (Missing Invoice → Cross-Period → Qty Variance → Price Variance), POST / REVIEW / OBSERVE rules, and automated RCA narrative generation.</div>
+          <div class="tags">
+            <span class="tag">Databricks</span>
+            <span class="tag light">Silver Layer</span>
+            <span class="tag light">Rule Engine</span>
+          </div>
+        </div>
+        <div class="phase-label">Hack Phase</div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase">
+        <div class="bubble">3</div>
+        <div class="card">
+          <div class="card-title">Integrate &amp; Build Advanced Dashboards</div>
+          <div class="card-body">Promote outputs to the Gold fact table and connect back to Datasphere via Delta Share. Build the full multi-page SAC story: Accrual Worklist, Variance Analysis, Vendor &amp; GL Intel, and Data Integration views with Smart Insights and Joule enabled.</div>
+          <div class="tags">
+            <span class="tag">SAC</span>
+            <span class="tag light">Gold Layer</span>
+            <span class="tag light">Delta Share</span>
+          </div>
+        </div>
+        <div class="phase-label">Hack Phase</div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase">
+        <div class="bubble accent">4</div>
+        <div class="card">
+          <div class="card-title">Refine, Test &amp; Conduct UAT</div>
+          <div class="card-body">Refine classification thresholds with finance SMEs (Siva's review). Validate GR/IR gap detection across all 5 company codes. Conduct UAT with Financial Controllers and Accounting Managers to confirm worklist accuracy and action rule alignment.</div>
+          <div class="tags">
+            <span class="tag accent" style="background:#1E49E2;">UAT</span>
+            <span class="tag light">5 Company Codes</span>
+            <span class="tag light">SME Review</span>
+          </div>
+        </div>
+        <div class="phase-label">Build Phase</div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="phase">
+        <div class="bubble accent">5</div>
+        <div class="card">
+          <div class="card-title">Velocity Deployment &amp; GTM</div>
+          <div class="card-body">Deploy the finalized BDC architecture into the KPMG Velocity environment. Package the Accrual Matching solution as a repeatable asset — delivering demo scripts, sales collateral, and client-facing documentation to support market adoption.</div>
+          <div class="tags">
+            <span class="tag accent" style="background:#1E49E2;">Velocity</span>
+            <span class="tag light">Demo Script</span>
+            <span class="tag light">GTM Collateral</span>
+          </div>
+        </div>
+        <div class="phase-label">Build Phase</div>
+      </div>
+
+      <!-- Phase 6 -->
+      <div class="phase">
+        <div class="bubble accent">6</div>
+        <div class="card">
+          <div class="card-title">Plan Future Enhancements</div>
+          <div class="card-body">Monitor KPIs (close cycle time, manual effort eliminated, audit findings). Finalize build-phase roadmap: Isolation Forest anomaly detection model, automated S/4HANA accrual postback for POST items, and multi-currency exposure normalization.</div>
+          <div class="tags">
+            <span class="tag future">Isolation Forest</span>
+            <span class="tag future">S/4 Postback</span>
+            <span class="tag light">KPI Tracking</span>
+          </div>
+        </div>
+        <div class="phase-label">Future State</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
