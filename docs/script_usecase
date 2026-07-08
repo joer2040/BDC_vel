@@ -1,1 +1,95 @@
+AI-Driven Accrual Matching
+Planned Video Script & Flow
+SLIDE 1 – Accrual Worklist (How the Solution Works)
+Visual Focus
+
+•	Open directly on the Accrual Worklist dashboard.
+•	Slowly zoom into the KPI cards.
+•	Scroll through the Recommended Accrual Items table.
+•	Highlight the Recommended Action and Root Cause Analysis columns.
+•	Pause briefly on each worklist category.
+Voiceover
+
+Every month-end, finance teams need to determine which purchase order items require accruals before the books are closed.
+Traditionally, this involves manually reviewing hundreds of open transactions, validating supporting documents, and coordinating with procurement and business stakeholders. This process is time-consuming, repetitive, and often delays the financial close.
+Our AI-Driven Accrual Matching solution simplifies this process by intelligently evaluating every open purchase order item using SAP transactional data, configurable business rules, and machine learning.
+Based on this analysis, each transaction is automatically classified into one of four action categories:
+• Auto Post Eligible
+• Exception Review Queue
+• Watchlist or Observation Queue
+• No Action Required
+Rather than reviewing every transaction individually, finance users can immediately focus on the items that genuinely require attention.
+For every recommendation, the solution also provides a Root Cause Analysis explaining why the item has been categorized in a particular way. This improves transparency, supports consistent decision-making, reduces manual effort, and enhances audit readiness.
+SLIDE 2 – Executive Summary (Business Overview)
+Visual Focus
+
+•	Transition to the Executive Summary dashboard.
+•	Highlight each KPI card sequentially.
+•	Pan across Exposure by Aging Bucket.
+•	Highlight Top Vendors by Accrual Exposure.
+•	End with the overall dashboard view.
+Voiceover
+
+Once operational recommendations have been generated, finance leadership requires a consolidated view of the organization’s overall accrual position.
+The Executive Summary dashboard brings together key financial indicators into a single view, providing immediate visibility into the organization’s accrual health.
+Key metrics such as Total Accrual Exposure, PO Accrual Completeness, Predicted Period-End Accrual, Open Accrual Items, and Exposure by Aging Bucket help leadership understand the current financial position and identify potential areas of concern.
+Rather than waiting until month-end reconciliation is complete, finance teams can continuously monitor accrual performance, identify emerging risks early, and make informed decisions before the financial close process begins.
+This enables better financial governance, increased visibility, and faster executive decision-making.
+SLIDE 3 – Trends & Spikes (Historical Analysis)
+Visual Focus
+
+•	Open the Trends & Spikes dashboard.
+•	Highlight the rolling trend chart.
+•	Move to Month-over-Month Variance.
+•	Highlight Exposure Distribution.
+•	End with Average Days Open by Worklist Category.
+Voiceover
+
+Understanding today’s accrual position is important, but understanding how it changes over time provides even greater business value.
+The Trends & Spikes dashboard analyses historical accrual data across multiple accounting periods to identify long-term trends, seasonal patterns, and unusual fluctuations.
+Finance teams can quickly detect sudden increases in accrual exposure, compare month-over-month performance, and investigate significant variances before they become financial reporting issues.
+Operational metrics such as Average Days Open by Worklist Category also provide insight into process efficiency by measuring how quickly different types of accrual cases are resolved.
+These historical insights support continuous process improvement and enable more proactive financial management throughout the accounting cycle.
+SLIDE 4 – Vendor Intelligence (Supplier Risk Analysis)
+Visual Focus
+
+•	Open Vendor Intelligence dashboard.
+•	Highlight Vendor Exposure vs Invoice Delay chart.
+•	Move to Top Suppliers by Age of Un-Invoiced Receipts.
+•	Highlight Predicted Unrecorded Liabilities.
+•	End with Supplier Contribution and Exposure Index visuals.
+Voiceover
+
+Supplier behaviour has a direct impact on accrual accuracy and financial risk.
+The Vendor Intelligence dashboard provides supplier-level insights by analysing invoice delays, ageing of uninvoiced receipts, predicted unrecorded liabilities, supplier exposure indices, and historical spending patterns.
+Machine learning identifies suppliers demonstrating unusual behaviour and highlights potential risks before they affect the period-end financial close.
+These insights allow finance and procurement teams to proactively engage with suppliers, prioritize high-risk transactions, improve accrual accuracy, and reduce unexpected financial adjustments.
+By combining operational data with predictive intelligence, organizations gain a deeper understanding of supplier performance and strengthen overall financial control.
+SLIDE 5 – AI & Solution Architecture
+Visual Focus
+
+•	Display the end-to-end architecture diagram.
+•	Highlight SAP S/4HANA as the source system.
+•	Show the flow through Datasphere, Databricks, AI models, and SAC dashboards.
+•	End by highlighting the business user interface.
+Voiceover
+
+The solution is built on SAP Business Data Cloud and combines multiple SAP technologies into a unified analytics platform.
+Transactional data is extracted from SAP S/4HANA and integrated through SAP Datasphere, where it is prepared and harmonized for downstream processing.
+Databricks performs advanced data engineering and machine learning, generating intelligent accrual recommendations and predictive insights.
+These results are presented through SAP Analytics Cloud dashboards, providing finance users with operational worklists, executive reporting, trend analysis, and vendor intelligence in a single integrated solution.
+This architecture ensures scalability, transparency, and seamless integration with the existing SAP landscape while enabling AI-driven financial decision-making.
+SLIDE 6 – Business Value & Conclusion
+Visual Focus
+
+•	Return to the Executive Summary dashboard.
+•	Slowly zoom out to display the complete solution.
+•	Display closing title: AI-Driven Accrual Matching.
+•	Fade into business benefits.
+Voiceover
+
+AI-Driven Accrual Matching transforms one of finance’s most manual and time-consuming activities into an intelligent, data-driven process.
+By combining SAP transactional data, configurable business rules, predictive analytics, and machine learning, the solution enables organizations to improve accrual accuracy, reduce manual effort, accelerate financial close, and strengthen audit readiness.
+Finance teams spend less time identifying potential accruals and more time validating meaningful recommendations and managing business exceptions.
+The result is a more efficient finance organization with greater transparency, improved operational efficiency, better-informed decision-making, and increased confidence in period-end financial reporting.
 
